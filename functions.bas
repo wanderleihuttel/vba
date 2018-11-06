@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 28/12/2015
+' Última atualização - 06/11/2018
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -90,11 +90,12 @@ End Function
 
 
 
-' Esta função serve para contar o tempo entre
+' Função para contar o tempo entre 2 horários
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
-' @name    fnLastDayOfMonth
-' @param   'string'      sDate            Data no formato dd/mm/aaaa
-' @return  'string'                       Último dia do mês
+' @name    fnTimeDiff
+' @param   'string'      tTimeStart       Data/Hora no formato dd/mm/aaaa hh:mm:ss
+' @param   'string'      tTimeFinish      Data/Hora no formato dd/mm/aaaa hh:mm:ss
+' @return  'string'                       Duração
 Public Function fnTimeDiff(ByVal tTimeStart As Date, ByVal tTimeFinish As Date) As String
     
     Dim DR, DL, JL As Long
@@ -134,7 +135,7 @@ End Function
 
 
 '################################################################################################################
-' Função serve para remover múltiplos espaços de uma string
+' Função para remover múltiplos espaços de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleSpaces
 ' @param   'string'      sValue          String com espaços
@@ -151,7 +152,7 @@ End Function
 
 
 '################################################################################################################
-' Esta função serve para remover múltiplas tabulações de uma string
+' Função para remover múltiplas tabulações de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleTabs
 ' @param   'string'      sValue           String com espaços
@@ -215,7 +216,7 @@ End Function
 
 
 '################################################################################################################
-' Esta função serve para abrir o DialogSaveAs
+' Função para abrir o DialogSaveAs e salvar um arquivo
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnSaveDialogFile
 ' @param   'string'      sFileName        Nome do arquivo/diretório inicial
