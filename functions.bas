@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 06/11/2018
+' Última atualização - 07/11/2018
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -23,6 +23,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnRemoveSpecialChars     Remover acentos ou caracteres especiais
 ' fnTestRegExp             Testar Expressão regular em uma string
 ' fnDuplicataParcela       Retornar número de duplicata ou parcela
+' fnSetSheetName           Usar o nome da planilha interna como variável
 
 
 
@@ -462,4 +463,28 @@ Public Function fnDuplicataParcela(ByVal sDuplicata As String, ByVal sTipoRetorn
         Next i
     End If
     
+End Function
+
+
+
+'################################################################################################################
+' Função para setar a planilha com o nome interno
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnSetSheetName
+' @param   'string'      sValue          String nome interno da planilha
+' @return  'worksheet'                   Objeto Worksheet
+'
+' Como usar:
+'    Dim Plan As Worksheet
+'    Dim SheetName As String
+'    SheetName = "RecPag"
+'    Set Plan = fnSetSheetName(SheetName)
+'    Plan.Cells(1, 1) = "algum valor"
+Function fnSetSheetName(ByVal sSheetName As String) As Worksheet
+    For Each ws In Worksheets
+        If ws.CodeName = sSheetName Then
+            Set fnSetSheetName = ws
+            Exit For
+        End If
+    Next ws
 End Function
