@@ -83,9 +83,6 @@ Function fnOnlyNumbers(ByVal sValue As String) As String
     objRegex.Global = True
     objRegex.Pattern = "[^\d]+"
     fnOnlyNumbers = objRegex.Replace(sValue, vbNullString)
-    If (fnOnlyNumbers = "") Then
-        fnOnlyNumber = "0"
-    End If
     
 End Function
 
