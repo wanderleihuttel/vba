@@ -204,7 +204,7 @@ Public Function fnOpenDialogFile(Optional ByVal sFileName As String = "", Option
                 fnOpenDialogFile = CStr(sPath)
             Next vrtSelectedItem
         Else
-            fnAbrirArquivo = ""
+            fnOpenDialogFile = ""
         End If
     End With
     Set fd = Nothing
@@ -267,7 +267,7 @@ Public Function fnSaveDialogFile(sFileName As String, _
         If .Show = -1 Then
             For Each vrtSelectedItem In .SelectedItems
                 sPath = vrtSelectedItem 'Caminho e nome do arquivo
-                fnSalvarArquivo = CStr(sPath)
+                fnSaveDialogFile = CStr(sPath)
             Next vrtSelectedItem
         Else
             fnSaveDialogFile = ""
