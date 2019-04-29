@@ -1,9 +1,9 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 07/11/2018
+' Última atualização - 11/04/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)    
 
 '################################################################################################################
 ' Funções Disponíveis
