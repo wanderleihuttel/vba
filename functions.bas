@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 11/04/2019
+' Última atualização - 23/05/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)    
@@ -24,6 +24,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnTestRegExp             Testar Expressão regular em uma string
 ' fnDuplicataParcela       Retornar número de duplicata ou parcela
 ' fnSetSheetName           Usar o nome da planilha interna como variável
+' fnStringReverse          Inverte o sentido de uma string
 
 
 
@@ -49,7 +50,7 @@ End Function
 ' @name    fnIsNumber
 ' @param   'string'      sValue           String
 ' @return  'boolean'                      Retorna true se é número e falso se não for número
-Function fnIsNumber(ByVal sValue As String) As Boolean
+Public Function fnIsNumber(ByVal sValue As String) As Boolean
   
     Dim DP As String
     Dim TS As String
@@ -76,7 +77,7 @@ End Function
 ' @param   'string'      sValue           String
 ' @return  'string'                       Retorna apenas os número ou zero
 'http://stackoverflow.com/questions/7239328/how-to-find-numbers-from-a-string
-Function fnOnlyNumbers(ByVal sValue As String) As String
+Public Function fnOnlyNumbers(ByVal sValue As String) As String
     
     Dim objRegex
     Set objRegex = CreateObject("vbscript.regexp")
@@ -365,7 +366,7 @@ End Function
 ' @param   'string'      sValue             String para substituir
 ' @param   'bool'        bSpecialCharacter  Boolean se é para remover caracteres especiais
 ' @return  'string'                         String sem acentos ou sem caracteres especiais
-Function fnRemoveSpecialChars(ByVal sValue As String, Optional bSpecialCharacter As Boolean = False) As String
+Public Function fnRemoveSpecialChars(ByVal sValue As String, Optional bSpecialCharacter As Boolean = False) As String
 
     Dim RE As Object
     Dim vPattern As Variant
@@ -464,7 +465,6 @@ End Function
 
 
 
-'################################################################################################################
 ' Função para setar a planilha com o nome interno
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnSetSheetName
@@ -477,11 +477,26 @@ End Function
 '    SheetName = "RecPag"
 '    Set Plan = fnSetSheetName(SheetName)
 '    Plan.Cells(1, 1) = "algum valor"
-Function fnSetSheetName(ByVal sSheetName As String) As Worksheet
+Public Function fnSetSheetName(ByVal sSheetName As String) As Worksheet
     For Each ws In Worksheets
         If ws.CodeName = sSheetName Then
             Set fnSetSheetName = ws
             Exit For
         End If
     Next ws
+End Function
+
+
+
+' Função para inverter uma string
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnStringReverse
+' @param   'string'      strIn            String
+' @return  'string'                       Retorna a string reversa
+Public Function fnStringReverse(strIn As String) As String
+    Dim output As String
+    For i = 0 To Len(strIn) - 1
+        output = output & Mid(CStr(strIn), Len(CStr(strIn)) - i, 1)
+    Next
+    fnStringReverse = output
 End Function
