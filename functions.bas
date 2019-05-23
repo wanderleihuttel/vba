@@ -500,3 +500,29 @@ Public Function fnStringReverse(strIn As String) As String
     Next
     fnStringReverse = output
 End Function
+
+
+
+' Função para retornar valor de bytes com sufixo
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnBytesHuman
+' @param   'string'      bytes          Double number
+' @return  'string'                     Número com sufixo
+Public Function fnBytesHuman(bytes As Double) As String
+    Dim units As Variant
+    bytes = Trim(bytes)
+    i = 0
+    units = Array("bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    Do While (True)
+        If (bytes < 1024) Then
+            If (i <= 0) Then
+                fnBytesHuman = Round(bytes, 2) & " " & units(i)
+            Else
+                fnBytesHuman = FormatNumber(Round(bytes, 2), 2) & " " & units(i)
+            End If
+            Exit Do
+        End If
+        bytes = bytes / 1024
+        i = i + 1
+    Loop
+End Function
