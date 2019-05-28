@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 23/05/2019
+' Última atualização - 28/05/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)    
@@ -25,6 +25,8 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnDuplicataParcela       Retornar número de duplicata ou parcela
 ' fnSetSheetName           Usar o nome da planilha interna como variável
 ' fnStringReverse          Inverte o sentido de uma string
+' fnBytesHuman             Retorna o valor de bytes com sufixo (bytes, KB, MB, GB, etc)
+' fnStrPos                 Retorna a posição na string onde determinado caracter se encontra
 
 
 
@@ -525,4 +527,49 @@ Public Function fnBytesHuman(bytes As Double) As String
         bytes = bytes / 1024
         i = i + 1
     Loop
+End Function
+
+
+
+'################################################################################################################
+' Função para retornar a posição de um determinado caracter em uma string string
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnStrPos
+' @param   'string'      sValue           string para procurar algum valor
+' @param   'string'      sChar            valor procurado
+' @param   'string'      iPosition        número da ocorrência procurada
+'                                         0 ou não informado = 1ª ocorrência
+'                                         -1                 =  última ocorrência
+'                                         N                  = ocorrência número N
+' @return  'integer'                      número da posição onde o caracter foi encontrado
+' Exemplo:  fnStrPos("123ABC456BDEF", "B") - retorna 5
+Public Function fnStrPos(ByVal sValue As String, ByVal sChar As String, Optional ByVal iPosition As Integer = 0) As Integer
+    
+    Dim index, size As Integer
+    size = Len(sValue)
+    
+    cont = 0
+    For i = 1 To size
+        'Procura o caracter "sChar" na posição i
+        index = InStr(i, sValue, sChar)
+        
+        'Se o index for maior que 0 é porque encontrou
+        If (index <> 0) Then
+           cont = cont + 1
+           i = index
+           'Se a posição for igual a zero é a primeira ocorrência
+           If (iPosition = 0) Then
+                Exit For
+           'Se a posição for igual ao cont é a ocorrência N
+           ElseIf (iPosition = cont) Then
+                Exit For
+           End If
+        'Se o index for igual a zero, o index recebe o valor de i
+        ElseIf (index = 0 And iPosition <= cont) Then
+           index = i - 1
+           Exit For
+        End If
+    Next i
+    fnStrPos = index
+
 End Function
