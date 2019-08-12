@@ -1,17 +1,17 @@
 Option Explicit
 
-Private Declare Function IsClipboardFormatAvailable Lib "user32" (ByVal uFormat As Long) As Long
-Private Declare Function OpenClipboard Lib "user32" (ByVal Hwnd As Long) As Long
-Private Declare Function GetClipboardData Lib "user32" (ByVal uFormat As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal strDest As Any, ByVal lpSource As Any, ByVal Length As Long)
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function CloseClipboard Lib "user32" () As Long
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function EmptyClipboard Lib "user32" () As Long
-Private Declare Function SetClipboardData Lib "user32" (ByVal uFormat As Long, ByVal hData As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function IsClipboardFormatAvailable Lib "user32" (ByVal uFormat As Long) As Long
+Private Declare PtrSafe Function OpenClipboard Lib "user32" (ByVal Hwnd As Long) As Long
+Private Declare PtrSafe Function GetClipboardData Lib "user32" (ByVal uFormat As Long) As Long
+Private Declare PtrSafe Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal strDest As Any, ByVal lpSource As Any, ByVal Length As Long)
+Private Declare PtrSafe Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function CloseClipboard Lib "user32" () As Long
+Private Declare PtrSafe Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare PtrSafe Function EmptyClipboard Lib "user32" () As Long
+Private Declare PtrSafe Function SetClipboardData Lib "user32" (ByVal uFormat As Long, ByVal hData As Long) As Long
+Private Declare PtrSafe Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 
 Private Const GMEM_MOVABLE = &H2&
 Private Const GMEM_DDESHARE = &H2000&
