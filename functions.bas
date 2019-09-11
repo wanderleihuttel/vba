@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 14/08/2019
+' Última atualização - 11/09/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -28,6 +28,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnStringReverse          Inverte o sentido de uma string
 ' fnBytesHuman             Retorna o valor de bytes com sufixo (bytes, KB, MB, GB, etc)
 ' fnStrPos                 Retorna a posição na string onde determinado caracter se encontra
+' fnExcelUpdateVBA         Habilitar ou desabilitar atualizações do excel (melhorar o desempenho de cálculo)
 
 
 
@@ -110,9 +111,9 @@ Public Function fnTimeDiff(ByVal tTimeStart As Date, ByVal tTimeFinish As Date) 
         JL = 0
     End If
     JL = JL + (DR - DL)
-    fnTimeDiff = Format(str(Int((Int((JL / 3600)) Mod 24))), "00") _
-        + ":" + Format(str(Int((Int((JL / 60)) Mod 60))), "00") _
-        + ":" + Format(str(Int((JL Mod 60))), "00")
+    fnTimeDiff = Format(Str(Int((Int((JL / 3600)) Mod 24))), "00") _
+        + ":" + Format(Str(Int((Int((JL / 60)) Mod 60))), "00") _
+        + ":" + Format(Str(Int((JL Mod 60))), "00")
         
 End Function
 
@@ -238,11 +239,11 @@ Public Function fnSaveDialogFile(sFileName As String, _
    
     ' Define os filtros de extensão | padrão = texto separado por tabulação '*.txt'
     If (sExtension = ".txt") Then
-        iFilter = "Texto (separado por tabulações)"
+        IFilter = "Texto (separado por tabulações)"
     ElseIf (sExtension = ".csv") Then
-        iFilter = "CSV (separado por vírgulas)"
+        IFilter = "CSV (separado por vírgulas)"
     Else
-        iFilter = "Texto (separado por tabulações)"
+        IFilter = "Texto (separado por tabulações)"
     End If
      
     ' Define o caminho padrão para salvar o arquivo'
@@ -260,7 +261,7 @@ Public Function fnSaveDialogFile(sFileName As String, _
     With fd
         ' Procura pelo índice correto da extensão desejada
         For iFilterIndex = 1 To .Filters.Count
-            If (InStr(1, LCase(.Filters(iFilterIndex).Description), LCase(iFilter), vbTextCompare) _
+            If (InStr(1, LCase(.Filters(iFilterIndex).Description), LCase(IFilter), vbTextCompare) _
                 And (LCase(.Filters(iFilterIndex).Extensions) = "*" & LCase(sExtension))) Then
                 .FilterIndex = iFilterIndex
                 Exit For
@@ -499,7 +500,7 @@ End Function
 ' Based on https://www.spreadsheet1.com/vba-codenames.html
 ' Como usar:
 ' Dim Plan As Object
-' Set Plan = fnGetSheetFromCodeName("SheetCodeName") (internal name)
+' Set Plan = fnGetSheetFromCodeName("SheetCodeName")
 Function fnGetSheetFromCodeName(sCodename As String) As Object
     Dim oSht As Object
     For Each oSht In ActiveWorkbook.Sheets
@@ -596,3 +597,16 @@ Public Function fnStrPos(ByVal sValue As String, ByVal sChar As String, Optional
 
 End Function
 
+'################################################################################################################
+' Função habilitar e desabilitar atualizações do excel (melhorar o desempenho de cálculo)
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnExcelUpdateVBA
+' @param   'boolean'     opt              True ou False
+' Exemplo:  fnExcelUpdateVBA(True)
+Public Function fnExcelUpdateVBA(ByVal opt As Boolean)
+
+    Application.Calculation = opt
+    Application.ScreenUpdating = opt
+    Application.DisplayAlerts = opt
+
+End Function
