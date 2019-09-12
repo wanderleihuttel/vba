@@ -1,6 +1,6 @@
 '################################################################################################################
 ' Funções VBA
-' Última atualização - 11/09/2019
+' Última atualização - 12/09/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -29,6 +29,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnBytesHuman             Retorna o valor de bytes com sufixo (bytes, KB, MB, GB, etc)
 ' fnStrPos                 Retorna a posição na string onde determinado caracter se encontra
 ' fnExcelUpdateVBA         Habilitar ou desabilitar atualizações do excel (melhorar o desempenho de cálculo)
+' fnStrUTF8ToASCII         Converter texto UTF8 para ASCII
 
 
 
@@ -193,7 +194,7 @@ Public Function fnOpenDialogFile(Optional ByVal sFileName As String = "", Option
         sPath = sFileName
     ' Raiz da planilha
     Else
-       sPath = ActiveWorkbook.Path & "\" & sFileName
+       sPath = ActiveWorkbook.path & "\" & sFileName
     End If
     
     With fd
@@ -255,7 +256,7 @@ Public Function fnSaveDialogFile(sFileName As String, _
         sPath = sFileName
     'Raiz da planilha
     Else
-        sPath = ActiveWorkbook.Path & "\" & sFileName & iExtension
+        sPath = ActiveWorkbook.path & "\" & sFileName & iExtension
     End If
     
     With fd
@@ -609,4 +610,38 @@ Public Function fnExcelUpdateVBA(ByVal opt As Boolean)
     Application.ScreenUpdating = opt
     Application.DisplayAlerts = opt
 
+End Function
+
+
+'################################################################################################################
+' Função para converter terxto UTF8 para ASCII
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnStrUTF8ToASCII
+' @param   'string'                 sInputString
+' Exemplo:  sInputString = fnStrUTF8ToASCII(sInputString)
+Public Function fnStrUTF8ToASCII(ByVal sInputString As String) As String
+    Dim l As Long, sUTF8 As String
+    Dim iChar As Integer
+    Dim iChar2 As Integer
+    On Error Resume Next
+    
+    For l = 1 To Len(sInputString)
+        iChar = Asc(Mid(sInputString, l, 1))
+        If iChar > 127 Then
+            If Not iChar And 32 Then
+            iChar2 = Asc(Mid(sInputString, l + 1, 1))
+            sUTF8 = sUTF8 & ChrW$(((31 And iChar) * 64 + (63 And iChar2)))
+            l = l + 1
+        Else
+            Dim iChar3 As Integer
+            iChar2 = Asc(Mid(sInputString, l + 1, 1))
+            iChar3 = Asc(Mid(sInputString, l + 2, 1))
+            sUTF8 = sUTF8 & ChrW$(((iChar And 15) * 16 * 256) + ((iChar2 And 63) * 64) + (iChar3 And 63))
+            l = l + 2
+        End If
+            Else
+            sUTF8 = sUTF8 & Chr$(iChar)
+        End If
+    Next l
+    fnStrUTF8ToASCII = sUTF8
 End Function
