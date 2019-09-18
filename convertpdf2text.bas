@@ -29,20 +29,12 @@ Function ConvertPdf2Text(ByVal pdf As Variant, Optional ByVal opt As String = "-
         Exit Function
     End If
     
-    txt = fs.GetParentFolderName(pdf) & "\" & fs.GetBaseName(pdf) & ".txt"    
-    
-    'Coloca aspas duplas nos caminhos
-    pdf2text = """" & pdf2text & """"   'Binário pdftotext
-    opt = " " & opt & " "               'Opções do pdftotext
-    pdf = """" & pdf & """"             'Arquivo PDF
-    txt = """" & txt & """"             'Arquivo TXT
-    
+    txt = fs.GetParentFolderName(pdf) & "\" & fs.GetBaseName(pdf) & ".txt"
     
     'Cria o comando para executar
-    command = pdf2text & opt & pdf & " " & txt
+    command = """" & pdf2text & """" & " " & opt & " " & """" & pdf & """" & " " & """" & txt & """"
     
     errorCode = wsh.Run(command, 0, waitOnReturn)
-    Exit Function
     
     If errorCode <> 0 Then
         ConvertPdf2Text = False
