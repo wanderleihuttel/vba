@@ -1,11 +1,11 @@
-'################################################################################################################
+'===============================================================================================================
 ' Funções VBA
-' Última atualização - 12/09/2019
+' Última atualização - 06/11/2019
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
-'################################################################################################################
+'===============================================================================================================
 ' Funções Disponíveis
 '
 ' fnFCPFCNPJ               Formatar CPF ou CNPJ
@@ -18,8 +18,6 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnOpenDialogFile         Abrir Open Dialog File
 ' fnSaveDialogFile         Abrir Save As Dialog File
 ' fnFS                     Formatar String TXT
-' fnGetUserName            Pegar apenas o nome do usuário
-' fnGetFileName            Pegar o nome do usuário
 ' fnRemoveSpecialChars     Remover acentos ou caracteres especiais
 ' fnTestRegExp             Testar Expressão regular em uma string
 ' fnDuplicataParcela       Retornar número de duplicata ou parcela
@@ -30,9 +28,10 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnStrPos                 Retorna a posição na string onde determinado caracter se encontra
 ' fnExcelUpdateVBA         Habilitar ou desabilitar atualizações do excel (melhorar o desempenho de cálculo)
 ' fnStrUTF8ToASCII         Converter texto UTF8 para ASCII
+' fnRegexDate              Buscar datas com expressão regular em uma string
 
 
-
+'===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnFCPFCNPJ
@@ -49,7 +48,7 @@ Public Function fnFCPFCNPJ(ByVal sValue As String) As String
 End Function
 
 
-
+'===============================================================================================================
 ' Função para verificar se determinada string é um número
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnIsNumber
@@ -75,7 +74,7 @@ Public Function fnIsNumber(ByVal sValue As String) As Boolean
 End Function
 
 
-
+'===============================================================================================================
 ' Função para pegar retornar apenas números de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnOnlyNumbers
@@ -93,7 +92,7 @@ Public Function fnOnlyNumbers(ByVal sValue As String) As String
 End Function
 
 
-
+'===============================================================================================================
 ' Função para contar o tempo entre 2 horários
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnTimeDiff
@@ -112,15 +111,14 @@ Public Function fnTimeDiff(ByVal tTimeStart As Date, ByVal tTimeFinish As Date) 
         JL = 0
     End If
     JL = JL + (DR - DL)
-    fnTimeDiff = Format(Str(Int((Int((JL / 3600)) Mod 24))), "00") _
-        + ":" + Format(Str(Int((Int((JL / 60)) Mod 60))), "00") _
-        + ":" + Format(Str(Int((JL Mod 60))), "00")
+    fnTimeDiff = Format(str(Int((Int((JL / 3600)) Mod 24))), "00") _
+        + ":" + Format(str(Int((Int((JL / 60)) Mod 60))), "00") _
+        + ":" + Format(str(Int((JL Mod 60))), "00")
         
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para retornar o último dia do mês de uma data informada
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnLastDayOfMonth
@@ -137,8 +135,7 @@ Public Function fnLastDayOfMonth(ByVal sDate As String) As String
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para remover múltiplos espaços de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleSpaces
@@ -154,8 +151,7 @@ Public Function fnDeleteMultipleSpaces(ByVal sValue As String) As String
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para remover múltiplas tabulações de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleTabs
@@ -171,8 +167,7 @@ Public Function fnDeleteMultipleTabs(ByVal sValue As String) As String
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para abrir o OpenDialogFile e digitar o nome de um arquivo
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnOpenDialogFile
@@ -194,7 +189,7 @@ Public Function fnOpenDialogFile(Optional ByVal sFileName As String = "", Option
         sPath = sFileName
     ' Raiz da planilha
     Else
-       sPath = ActiveWorkbook.path & "\" & sFileName
+       sPath = ActiveWorkbook.Path & "\" & sFileName
     End If
     
     With fd
@@ -218,8 +213,7 @@ Public Function fnOpenDialogFile(Optional ByVal sFileName As String = "", Option
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para abrir o DialogSaveAs e salvar um arquivo
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnSaveDialogFile
@@ -256,7 +250,7 @@ Public Function fnSaveDialogFile(sFileName As String, _
         sPath = sFileName
     'Raiz da planilha
     Else
-        sPath = ActiveWorkbook.path & "\" & sFileName & iExtension
+        sPath = ActiveWorkbook.Path & "\" & sFileName & iExtension
     End If
     
     With fd
@@ -284,8 +278,7 @@ Public Function fnSaveDialogFile(sFileName As String, _
 End Function
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para escrever strings de tamanho variáveis, com caracteres de preenchimento e
 ' alinhamento (utilizado para gerar arquivos texto para layouts)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
@@ -312,59 +305,7 @@ Public Function fnFS(ByVal sValue As String, ByVal iSize As Integer, ByVal sPosi
 End Function
 
 
-
-'################################################################################################################
-' Função serve retornar o nome do usuário atual
-' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
-' @name    fnGetUserName
-' @return  'string'                        nome do usuário
-' 28/04/2015
-Public Function fnGetUserName() As String
-
-    Const separator = "\"
-    Dim i As Integer
-    Dim arquivo As String
-    strUser = Environ$("USERPROFILE")
-    strAux = strUser
-    For i = Len(strUser) To 1 Step -1
-        If Mid$(strUser, i, 1) = separator Then
-            strAux = LCase(Mid$(strUser, i + 1, Len(strUser) - i + 1))
-            fnGetUserName = strAux
-            Exit Function
-        End If
-    Next
-
-End Function
-
-
-
-'################################################################################################################
-' Função para pegar o nome de um arquivo
-' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
-' @name    fnBasename
-' @param   'string'      sFileName         arquivo com o caminho completo
-' @return  'string'                        apenas nome do arquivo
-Public Function fnGetFilename(ByVal sFileName As String, Optional ByVal setCase = True) As String
-    
-    Const separator = "\"
-    Dim i As Integer
-    strAux = sFileName
-    For i = Len(sFileName) To 1 Step -1
-        If Mid$(sFileName, i, 1) = separator Then
-            strAux = Mid$(sFileName, i + 1, Len(sFileName) - i + 1)
-            If (setCase = True) Then
-                strAux = LCase(strAux)
-            End If
-            fnGetFilename = strAux
-            Exit Function
-        End If
-    Next
-    
-End Function
-
-
-
-'################################################################################################################
+'===============================================================================================================
 ' Função para substituir acentos ou caracters especiais usando regex
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnRemoveSpecialChars
@@ -373,7 +314,7 @@ End Function
 ' @return  'string'                         String sem acentos ou sem caracteres especiais
 Public Function fnRemoveSpecialChars(ByVal sValue As String, Optional bSpecialCharacter As Boolean = False) As String
 
-    Dim RE As Object
+    Dim re As Object
     Dim vPattern As Variant
     If (bSpecialCharacter = False) Then
         vPattern = Array("[áàâãä]|a", "[ÁÀÂÃÄ]|A", "[éèê]|e", "[ÉÈÊ]|E", "[íì]|i", "[ÍÌ]|I", "[óòôõö]|o", "[ÓÒÔÕÖ]|O", "[úùü]|u", "[ÚÙÜ]|U", "ç|c", "Ç|C")
@@ -381,13 +322,13 @@ Public Function fnRemoveSpecialChars(ByVal sValue As String, Optional bSpecialCh
         vPattern = Array("-|", "/|", "\.|", "º|o", "ª|a", "\\|")
     End If
     
-    Set RE = CreateObject("vbscript.regexp")
-    RE.Global = True
+    Set re = CreateObject("vbscript.regexp")
+    re.Global = True
     For i = 0 To UBound(vPattern)
         aux = Split(vPattern(i), "|")
-        RE.Pattern = aux(0)
+        re.Pattern = aux(0)
         sReplaceWith = aux(1)
-        sValue = RE.Replace(sValue, sReplaceWith)
+        sValue = re.Replace(sValue, sReplaceWith)
     Next i
     fnRemoveSpecialChars = sValue
 
@@ -395,8 +336,7 @@ End Function
 
 
 
-
-'################################################################################################################
+'===============================================================================================================
 ' Esta função serve testar uma expressão regular em uma string
 '
 ' @author  unknown name
@@ -410,7 +350,7 @@ End Function
 Public Function fnTestRegExp(sMyPattern As String, sMyString As String) As Boolean
 
     Dim objRegExp As RegExp
-    Dim objMatch As Match
+    Dim objMatch As match
     Dim colMatches   As MatchCollection
    
     Set objRegExp = New RegExp       ' Create a regular expression object.
@@ -429,7 +369,7 @@ Public Function fnTestRegExp(sMyPattern As String, sMyString As String) As Boole
 End Function
 
 
-
+'===============================================================================================================
 ' Função para pegar número da duplica e parcela quando quando parcelas são letras
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDuplicataParcela
@@ -469,30 +409,7 @@ Public Function fnDuplicataParcela(ByVal sDuplicata As String, ByVal sTipoRetorn
 End Function
 
 
-
-' Função para setar a planilha com o nome interno
-' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
-' @name    fnSetSheetName
-' @param   'string'      sValue          String nome interno da planilha
-' @return  'worksheet'                   Objeto Worksheet
-'
-' Como usar:
-'    Dim Plan As Worksheet
-'    Dim SheetName As String
-'    SheetName = "RecPag"
-'    Set Plan = fnSetSheetName(SheetName)
-'    Plan.Cells(1, 1) = "algum valor"
-Public Function fnSetSheetName(ByVal sSheetName As String) As Worksheet
-    For Each ws In Worksheets
-        If ws.CodeName = sSheetName Then
-            Set fnSetSheetName = ws
-            Exit For
-        End If
-    Next ws
-End Function
-
-
-
+'===============================================================================================================
 ' Função para setar a planilha com o nome interno (CodeName)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnGetSheetFromCodeName
@@ -502,7 +419,7 @@ End Function
 ' Como usar:
 ' Dim Plan As Object
 ' Set Plan = fnGetSheetFromCodeName("SheetCodeName")
-Function fnGetSheetFromCodeName(sCodename As String) As Object
+Public Function fnGetSheetFromCodeName(sCodename As String) As Object
     Dim oSht As Object
     For Each oSht In ActiveWorkbook.Sheets
         If oSht.CodeName = sCodename Then
@@ -513,7 +430,7 @@ Function fnGetSheetFromCodeName(sCodename As String) As Object
 End Function
 
 
-
+'===============================================================================================================
 ' Função para inverter uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnStringReverse
@@ -528,7 +445,7 @@ Public Function fnStringReverse(strIn As String) As String
 End Function
 
 
-
+'===============================================================================================================
 ' Função para retornar valor de bytes com sufixo
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnBytesHuman
@@ -555,7 +472,7 @@ End Function
 
 
 
-'################################################################################################################
+'===============================================================================================================
 ' Função para retornar a posição de um determinado caracter em uma string string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnStrPos
@@ -598,7 +515,8 @@ Public Function fnStrPos(ByVal sValue As String, ByVal sChar As String, Optional
 
 End Function
 
-'################################################################################################################
+
+'===============================================================================================================
 ' Função habilitar e desabilitar atualizações do excel (melhorar o desempenho de cálculo)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnExcelUpdateVBA
@@ -617,7 +535,7 @@ Public Function fnExcelUpdateVBA(ByVal opt As Boolean)
 End Function
 
 
-'################################################################################################################
+'===============================================================================================================
 ' Função para converter terxto UTF8 para ASCII
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnStrUTF8ToASCII
@@ -648,4 +566,39 @@ Public Function fnStrUTF8ToASCII(ByVal sInputString As String) As String
         End If
     Next l
     fnStrUTF8ToASCII = sUTF8
+End Function
+
+
+'===============================================================================================================
+' Função para buscar datas com regex em uma string
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnRegexDate
+' @param   'string'      str   String contendo data
+' @return  'variant'           Array com todas as datas encontradas em uma string ou falso
+Public Function fnRegexDate(ByVal str As String) As Variant
+    Dim re As Object, match As Object, AllMatches As Object
+    Dim arr_date() As String
+    Dim i As Integer
+    Set re = CreateObject("vbscript.regexp")
+    're.Pattern = "[\d]{2}[\/-][\d]{2}[\/-][\d]{4}"
+    re.Pattern = "([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}"
+    re.Global = True
+
+    i = 0
+    Set AllMatches = re.Execute(str)
+    For Each match In AllMatches
+        If IsDate(match.Value) Then
+            ReDim Preserve arr_date(i)
+            arr_date(i) = CStr(CDate(match.Value))
+            i = i + 1
+        End If
+    Next
+    
+    If AllMatches.Count > 0 Then
+        fnRegexDate = arr_date
+    Else
+        fnRegexDate = False
+    End If
+    Set re = Nothing
+
 End Function
