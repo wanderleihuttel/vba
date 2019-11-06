@@ -1,7 +1,15 @@
-'Função para converter PDF para TXT
+'Para essa função funcionar corretamente é preciso efetuar o download do utilitário "xpdf-tools" no link abaixo
+'e salvar em algum diretório, por exemplo: C:\xpdf-tools\
 'https://www.xpdfreader.com/download.html
-'Efetuar download xpdf-tools e salvar em algum diretório
-Function ConvertPdf2Text(ByVal pdf As Variant, Optional ByVal opt As String = "-table -eol dos -nopgbrk") As Variant
+' O utilitário xpdf-tools, só converte PDF que são gerados a partir de texto. De imagem vai dar erro.
+
+' Função para converter PDF para TXT
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    ConvertPdf2Text
+' @param   'string'      pdf              String
+' @param   'string'      opt              String
+' @return  'variant'                      Retorna o caminho do arquivo txt ou falso
+Function ConvertPdf2Text(ByVal pdf As String, Optional ByVal opt As String = "-table -eol dos -nopgbrk") As Variant
     
     Dim wsh As Object, fs As Object
     Set wsh = VBA.CreateObject("WScript.Shell")
