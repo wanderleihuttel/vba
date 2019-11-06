@@ -606,7 +606,11 @@ End Function
 ' Exemplo:  fnExcelUpdateVBA(True)
 Public Function fnExcelUpdateVBA(ByVal opt As Boolean)
 
-    Application.Calculation = opt
+    If (opt = True) Then
+        Application.Calculation = xlCalculationAutomatic
+    Else
+        Application.Calculation = xlCalculationManual
+    End If
     Application.ScreenUpdating = opt
     Application.DisplayAlerts = opt
 
