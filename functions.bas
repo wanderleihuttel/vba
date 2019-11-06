@@ -602,3 +602,138 @@ Public Function fnRegexDate(ByVal str As String) As Variant
     Set re = Nothing
 
 End Function
+
+
+
+
+
+
+'===============================================================================================================
+' FUNÇÕES PARA MANIPULAÇÃO DE ARQUIVOS
+'===============================================================================================================
+' FileExists               Verificar se arquivo existe
+' FolderExists             Verificar se diretório existe
+' GetFileName              Retorna o nome do arquivo com extensão
+' GetBaseName              Retorna o nome do arquivo sem extensão
+' GetExtensionName         Retorna a extensão de um arquivo
+' GetDriveName             Retorna o drive do caminho especificado
+' GetParentFolderName      Retorna o diretório pai do caminho especificado
+' GetDesktopPath           Retorna o caminho do Desktop
+' GetWorkbookPath          Retorna o caminho da planilha
+
+
+'===============================================================================================================
+' Função para verificar se arquivo existe
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    FileExists
+' @param   'string'      FileSpec     Caminho do arquivo
+' @return  'boolean'                  Verdadeiro se existir e falso se não existir
+Public Function FileExists(ByVal FileSpec As String) As Boolean
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    'Dim fso As FileSystemObject
+    'Set fso = New FileSystemObject
+    FileExists = fso.FileExists(FileSpec)
+End Function
+
+
+'===============================================================================================================
+' Função para verificar se arquivo existe
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    FolderExists
+' @param   'string'      FolderSpec   Caminho do diretório
+' @return  'boolean'                  Verdadeiro se existir e falso se não existir
+Public Function FolderExists(ByVal FolderSpec As String) As Boolean
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    FolderExists = fso.FolderExists(FolderSpec)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar apenas o nome do arquivo com extensão de um diretório/arquivo informado
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetFileName
+' @param   'string'      path         Caminho do diretório/arquivo
+' @return  'string'                   Apenas nome do arquivo com extensão
+Public Function GetFileName(ByVal path As String) As String
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    GetFileName = fso.GetFileName(path)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar apenas o nome do arquivo sem extensão de um diretório/arquivo informado
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetBaseName
+' @param   'string'      path         Caminho do diretório/arquivo
+' @return  'string'                   Apenas nome do arquivo sem extensão
+Public Function GetBaseName(ByVal path As String) As String
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    GetBaseName = fso.GetBaseName(path)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar apenas a extensão de um diretório/arquivo informado
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetExtensionName
+' @param   'string'      path         Caminho do diretório/arquivo
+' @return  'string'                   Apenas nome do arquivo sem extensão
+Public Function GetExtensionName(ByVal path As String) As String
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    GetExtensionName = fso.GetExtensionName(path)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar o drive da unidade de um diretório/arquivo informado
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetDriveName
+' @param   'string'      path         Caminho do diretório/arquivo
+' @return  'string'                   Apenas letra da unidade
+Public Function GetDriveName(ByVal path As String) As String
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    GetDriveName = fso.GetDriveName(path)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar o diretório pai um diretório/arquivo informado
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetParentFolderName
+' @param   'string'      path         Caminho do diretório/arquivo
+' @return  'string'                   Caminho pai do diretório/arquivo
+Public Function GetParentFolderName(ByVal path As String) As String
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    GetParentFolderName = fso.GetParentFolderName(path)
+End Function
+
+
+'===============================================================================================================
+' Função para retornar o caminho do Desktop
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetDesktopPath
+' @return  'string'                   Caminho do Desktop do usuário atual
+Public Function GetDesktopPath() As String
+    Dim wso As Object
+    Set wso = CreateObject("WScript.Shell")
+    GetDesktopPath = wso.SpecialFolders("Desktop")
+    Set wso = Nothing
+End Function
+
+
+'===============================================================================================================
+' Função para retornar o caminho da planilha atual
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    GetWorkbookPath
+' @return  'string'                   Caminho do planilha atual
+Function GetWorkbookPath() As String
+    GetWorkbookPath = ActiveWorkbook.path
+End Function
+
