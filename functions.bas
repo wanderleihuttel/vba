@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 06/11/2019
+' Última atualização - 27/01/2020
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -341,26 +341,24 @@ End Function
 '
 ' @author  unknown name
 ' @name    fnTestRegExp
-' @param   'string'      sMyPattern         expressão regular
-' @return  'string'      sMyString          string para verificar
+' @param   'string'      vPattern         expressão regular
+' @return  'string'      vString          string para verificar
 ' Exemplo:
 ' sMyString = "IS1 is2 IS3 is4"
 ' sMyPattern = "is."
-' retorno = fnTestRegExp(sMyPattern, sMyString)
-Public Function fnTestRegExp(sMyPattern As String, sMyString As String) As Boolean
+' retorno = fnTestRegExp(vPattern, vString)
+Public Function fnTestRegExp(vPattern As String, vString As String) As Boolean
 
-    Dim objRegExp As RegExp
-    Dim objMatch As match
-    Dim colMatches   As MatchCollection
+    Dim re As Object, match As Object, allmatches As Object
    
-    Set objRegExp = New RegExp       ' Create a regular expression object.
-    objRegExp.Pattern = sMyPattern   ' Set the pattern by using the Pattern property.
-    objRegExp.IgnoreCase = False     ' Set Case Insensitivity.
-    objRegExp.Global = True          ' Set global applicability.
+    Set re = CreateObject("vbscript.regexp")
+    re.Pattern = vPattern
+    re.IgnoreCase = False
+    re.Global = True
 
-    If (objRegExp.Test(sMyString) = True) Then    ' Test whether the String can be compared.
+    If (re.Test(vString) = True) Then
         'Get the matches.
-        Set colMatches = objRegExp.Execute(sMyString)   ' Execute search.
+        Set allmatches = re.Execute(vString)
         fnTestRegExp = True
     Else
        fnTestRegExp = False
