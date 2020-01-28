@@ -5,11 +5,7 @@ Global adoConnection As ADODB.connection
 Global rs As ADODB.Recordset
 
 
-'Dim adoConnection As ADODB.Connection
-'Dim rs As ADODB.Recordset
-
-'Function ConnectDatabase
-'Function ConnectDatabase
+'===============================================================================================================
 Public Function ConnectDatabase(connection As String)
     On Error GoTo ErrorHandler
     Dim m As Integer
@@ -31,12 +27,15 @@ ErrorHandler:
 End Function
 
 
+'===============================================================================================================
 'Function CloseDatabase
 Public Function CloseDatabase()
     adoConnection.Close
     Set adoConnection = Nothing
 End Function
 
+
+'===============================================================================================================
 'Function Query
 Public Function Query(ByVal sql_query As String, ByVal vSheetName As String, Optional ByVal vShowHeader As Boolean = True, Optional ByVal vStartCell As String = "A2")
 
@@ -64,6 +63,7 @@ Public Function Query(ByVal sql_query As String, ByVal vSheetName As String, Opt
 End Function
 
 
+'===============================================================================================================
 'Function GetDataFromDB
 Sub GetDataFromDB()
     
