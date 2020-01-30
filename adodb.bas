@@ -15,7 +15,7 @@ Public Function ConnectDatabase(connection As String)
     
     'Configuração Global Conexão
     'Firebird Example (Needs ODBC driver) https://firebirdsql.org/en/odbc-driver/
-    'driver={Firebird/InterBase(r) driver};dbname=10.1.1.1:C:\database\database.fdb;user=sysdba;password=masterkey
+    'driver={Firebird/InterBase(r) driver};dbname=10.1.1.1:C:\database\database.fdb;user=sysdba;password=masterkey;c:\firebird\gds32.dll
     adoConnection.ConnectionString = connection
     adoConnection.Open
 
