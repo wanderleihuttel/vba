@@ -64,28 +64,20 @@ End Function
 
 
 '===============================================================================================================
-'Function GetDataFromDB
-Sub GetDataFromDB()
+'Function Execute
+Public Function ExecuteSQL(sql_query As String)
+    On Error GoTo ErrorHandler
+    Dim m As Integer
     
-    Plan2.Cells.ClearContents
-    Dim i As Integer
-    Dim sql As String
+    adoConnection.BeginTrans
+    Set rs = adoConnection.Execute(sql_query)
+    adoConnection.CommitTrans
+    Set rs = Nothing
     
-    Set rs = New ADODB.Recordset
-    Call ConnectDatabase
+Exit Function
+ErrorHandler:
+    m = MsgBox("Error number: " & Err.Number - vbObjectError & vbNewLine & Err.Description & vbNewLine & vbNewLine & "Contate o suporte técnico de TI!", vbCritical, "Mensagem de erro")
+    adoConnection.RollbackTrans
+    Set rs = Nothing
     
-    sql = "SELECT * FROM sometable"
-    rs.CursorLocation = adUseClient
-    rs.Open sql, adoConnection, adOpenDynamic, adLockOptimistic
-    
-    'Get header name from columns
-    For i = 0 To rs.Fields.count - 1
-        Plan2.Cells(1, i + 1) = rs.Fields(i).Name
-    Next i
-    
-    'Copy result from recorset to sheet
-    Plan2.Range("A2").CopyFromRecordset rs
-    
-    rs.Close
-    
-End Sub
+End Function
