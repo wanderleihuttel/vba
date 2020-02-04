@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 27/01/2020
+' Última atualização - 04/02/2020
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -29,7 +29,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnExcelUpdateVBA         Habilitar ou desabilitar atualizações do excel (melhorar o desempenho de cálculo)
 ' fnStrUTF8ToASCII         Converter texto UTF8 para ASCII
 ' fnRegexDate              Buscar datas com expressão regular em uma string
-
+' fnRegexReplace           Efetuar substituiçoes em strings com expressões regulares
 
 '===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
@@ -602,7 +602,24 @@ Public Function fnRegexDate(ByVal str As String) As Variant
 End Function
 
 
-
+'===============================================================================================================
+' Função para usar expressões regulares para substituir strings
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnRegexReplace
+' @param   'string'      vString    String qualquer
+' @param   'string'      vPattern   String com o padrão regex
+' @param   'string'      vReplace   String para substituir os matches
+' @return  'string'                 String original ou modificada
+Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String, ByVal vReplace As String) As Variant
+    Dim re As Object, match As Object, AllMatches As Object
+    Dim arr_date() As String
+    Dim i As Long
+    Set re = CreateObject("vbscript.regexp")
+    re.Pattern = vPattern
+    re.Global = True
+    fnRegexReplace = re.Replace(vString, vReplace)
+    Set re = Nothing
+End Function
 
 
 
@@ -731,7 +748,6 @@ End Function
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    GetWorkbookPath
 ' @return  'string'                   Caminho do planilha atual
-Function GetWorkbookPath() As String
+Public Function GetWorkbookPath() As String
     GetWorkbookPath = ActiveWorkbook.path
 End Function
-
