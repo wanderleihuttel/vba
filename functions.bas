@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 04/02/2020
+' Última atualização - 21/02/2020
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -30,6 +30,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnStrUTF8ToASCII         Converter texto UTF8 para ASCII
 ' fnRegexDate              Buscar datas com expressão regular em uma string
 ' fnRegexReplace           Efetuar substituiçoes em strings com expressões regulares
+' fnShowNamedRange         Exibir ou ocultar Named Ranges
 
 '===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
@@ -189,7 +190,7 @@ Public Function fnOpenDialogFile(Optional ByVal sFileName As String = "", Option
         sPath = sFileName
     ' Raiz da planilha
     Else
-       sPath = ActiveWorkbook.Path & "\" & sFileName
+       sPath = ActiveWorkbook.path & "\" & sFileName
     End If
     
     With fd
@@ -250,13 +251,13 @@ Public Function fnSaveDialogFile(sFileName As String, _
         sPath = sFileName
     'Raiz da planilha
     Else
-        sPath = ActiveWorkbook.Path & "\" & sFileName & iExtension
+        sPath = ActiveWorkbook.path & "\" & sFileName & iExtension
     End If
     
     With fd
         ' Procura pelo índice correto da extensão desejada
-        For iFilterIndex = 1 To .Filters.Count
-            If (InStr(1, LCase(.Filters(iFilterIndex).Description), LCase(IFilter), vbTextCompare) _
+        For iFilterIndex = 1 To .Filters.count
+            If (InStr(1, LCase(.Filters(iFilterIndex).description), LCase(IFilter), vbTextCompare) _
                 And (LCase(.Filters(iFilterIndex).Extensions) = "*" & LCase(sExtension))) Then
                 .FilterIndex = iFilterIndex
                 Exit For
@@ -349,7 +350,7 @@ End Function
 ' retorno = fnTestRegExp(vPattern, vString)
 Public Function fnTestRegExp(vPattern As String, vString As String) As Boolean
 
-    Dim re As Object, match As Object, allmatches As Object
+    Dim re As Object, match As Object, AllMatches As Object
    
     Set re = CreateObject("vbscript.regexp")
     re.Pattern = vPattern
@@ -358,7 +359,7 @@ Public Function fnTestRegExp(vPattern As String, vString As String) As Boolean
 
     If (re.Test(vString) = True) Then
         'Get the matches.
-        Set allmatches = re.Execute(vString)
+        Set AllMatches = re.Execute(vString)
         fnTestRegExp = True
     Else
        fnTestRegExp = False
@@ -584,14 +585,14 @@ Public Function fnRegexDate(ByVal str As String) As Variant
     i = 0
     Set AllMatches = re.Execute(str)
     For Each match In AllMatches
-        If IsDate(match.Value) Then
+        If IsDate(match.value) Then
             ReDim Preserve arr_date(i)
-            arr_date(i) = CStr(CDate(match.Value))
+            arr_date(i) = CStr(CDate(match.value))
             i = i + 1
         End If
     Next
     
-    If AllMatches.Count > 0 Then
+    If AllMatches.count > 0 Then
         fnRegexDate = arr_date
     Else
         fnRegexDate = False
@@ -619,6 +620,20 @@ Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String
     fnRegexReplace = re.Replace(vString, vReplace)
     Set re = Nothing
 End Function
+
+
+'===============================================================================================================
+' Função ocultar nome de célula (range name)
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnShowNamedRange
+' @param   'boolean'      vOption    True ou False
+Public Function fnShowNamedRange(Optional ByVal vOption As Boolean = True)
+    Dim n As Name
+    For Each n In ThisWorkbook.Names
+        n.Visible = vOption
+    Next n
+End Function
+
 
 
 
