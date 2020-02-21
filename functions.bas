@@ -518,17 +518,16 @@ End Function
 ' Função habilitar e desabilitar atualizações do excel (melhorar o desempenho de cálculo)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnExcelUpdateVBA
-' @param   'boolean'     opt              True ou False
+' @param   'boolean'     vOption              True ou False
 ' Exemplo:  fnExcelUpdateVBA(True)
-Public Function fnExcelUpdateVBA(ByVal opt As Boolean)
+Public Function fnExcelUpdateVBA(Optional ByVal vOption As Boolean = True)
 
-    If (opt = True) Then
-        Application.Calculation = xlCalculationAutomatic
-    Else
-        Application.Calculation = xlCalculationManual
-    End If
-    Application.ScreenUpdating = opt
-    Application.DisplayAlerts = opt
+    With Application
+        .Calculation = IIf(vOption = True, xlCalculationAutomatic, xlCalculationManual)
+        .ScreenUpdating = vOption
+        .DisplayAlerts = vOption
+        .EnableAnimations = vOption
+    End With
 
 End Function
 
