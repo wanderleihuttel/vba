@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 21/02/2020
+' Última atualização - 24/02/2020
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -528,6 +528,8 @@ Public Function fnExcelUpdateVBA(Optional ByVal vOption As Boolean = True)
         .ScreenUpdating = vOption
         .DisplayAlerts = vOption
         .EnableAnimations = vOption
+        .EnableEvents = vOption
+        .EnableCancelKey = IIf(vOption = True, xlInterrupt, xlErrorHandler)
     End With
 
 End Function
