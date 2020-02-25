@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 24/02/2020
+' Última atualização - 25/02/2020
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -8,7 +8,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 '===============================================================================================================
 ' Funções Disponíveis
 '
-' fnFCPFCNPJ               Formatar CPF ou CNPJ
+' fnStrMaskCPFCNPJ         Formatar CPF ou CNPJ
 ' fnIsNumber               Verificar se uma string é numérica
 ' fnOnlyNumbers            Retorna apenas os números de uma string
 ' fnTimeDiff               Retorna a diferença entre 2 horários
@@ -21,7 +21,6 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnRemoveSpecialChars     Remover acentos ou caracteres especiais
 ' fnTestRegExp             Testar Expressão regular em uma string
 ' fnDuplicataParcela       Retornar número de duplicata ou parcela
-' fnSetSheetName           Usar o nome da planilha interna como variável (deprecated)
 ' fnGetSheetFromCodeName   Usar o nome da planilha interna como variável
 ' fnStringReverse          Inverte o sentido de uma string
 ' fnBytesHuman             Retorna o valor de bytes com sufixo (bytes, KB, MB, GB, etc)
@@ -31,21 +30,25 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnRegexDate              Buscar datas com expressão regular em uma string
 ' fnRegexReplace           Efetuar substituiçoes em strings com expressões regulares
 ' fnShowNamedRange         Exibir ou ocultar Named Ranges
+' fnPadLeft                Acrescentar caracteres à esquerda de uma string
+' fnPadRight               Acrescentar caracteres à direita de uma string
 
 '===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnFCPFCNPJ
-' @param   'string'      sValue           String
+' @param   'string'      vString          String
 ' @return  'string'                       Retorna CPF ou CNPJ formatado
-Public Function fnFCPFCNPJ(ByVal sValue As String) As String
+Public Function fnStrMaskCPFCNPJ(ByVal vString As String) As String
 
-    If (Len(sValue) = 11) Then
-        fnFCPFCNPJ = Mid(sValue, 1, 3) & "." & Mid(sValue, 4, 3) & "." & Mid(sValue, 7, 3) & "-" & Mid(sValue, 10, 2)
-    ElseIf (Len(sValue) = 14) Then
-        fnFCPFCNPJ = Mid(sValue, 1, 2) & "." & Mid(sValue, 3, 3) & "." & Mid(sValue, 6, 3) & "/" & Mid(sValue, 9, 4) & "-" & Mid(sValue, 13, 2)
+    If (Len(vString) = 11) Then
+        fnStrMaskCPFCNPJ = Format$(vString, "000\.000\.000\-00")
+    ElseIf (Len(sValue) <= 12) Then
+        fnStrMaskCPFCNPJ = Format$(vString, "00\.000\.000\/0000\-00")
+    Else
+        fnStrMaskCPFCNPJ = vString
     End If
-
+    
 End Function
 
 
@@ -55,7 +58,7 @@ End Function
 ' @name    fnIsNumber
 ' @param   'string'      sValue           String
 ' @return  'boolean'                      Retorna true se é número e falso se não for número
-Public Function fnIsNumber(ByVal sValue As String) As Boolean
+Public Function fnIsNumber(ByVal vString As String) As Boolean
   
     Dim DP As String
     Dim TS As String
@@ -66,11 +69,11 @@ Public Function fnIsNumber(ByVal sValue As String) As Boolean
     '   if you don't want your users being able to
     '   type in the thousands separator at all.
     TS = Mid$(Format$(1000, "#,###"), 2, 1)
-    sValue = Replace$(sValue, TS, "")
+    vString = Replace$(vString, TS, "")
     '   Leave the next statement out if you don't
     '   want to provide for plus/minus signs
-    If sValue Like "[+-]*" Then sValue = Mid$(sValue, 2)
-    fnIsNumber = Not sValue Like "*[!0-9" & DP & "]*" And Not sValue Like "*" & DP & "*" & DP & "*" And Len(sValue) > 0 And sValue <> DP
+    If vString Like "[+-]*" Then vString = Mid$(vString, 2)
+    fnIsNumber = Not vString Like "*[!0-9" & DP & "]*" And Not vString Like "*" & DP & "*" & DP & "*" And Len(vString) > 0 And vString <> DP
   
 End Function
 
@@ -79,17 +82,17 @@ End Function
 ' Função para pegar retornar apenas números de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnOnlyNumbers
-' @param   'string'      sValue           String
-' @return  'string'                       Retorna apenas os número ou zero
+' @param   'string'      vString          String
+' @return  'string'                       Retorna apenas números
 'http://stackoverflow.com/questions/7239328/how-to-find-numbers-from-a-string
-Public Function fnOnlyNumbers(ByVal sValue As String) As String
-    
-    Dim objRegex
-    Set objRegex = CreateObject("vbscript.regexp")
-    objRegex.Global = True
-    objRegex.Pattern = "[^\d]+"
-    fnOnlyNumbers = objRegex.Replace(sValue, vbNullString)
-    
+Public Function fnOnlyNumbers(ByVal vString As String) As String
+
+    With CreateObject("VBScript.RegExp")
+        .Pattern = "[^\d]+"
+        .Global = True
+        fnOnlyNumbers = .Replace(vString, vbNullString)
+    End With
+
 End Function
 
 
@@ -101,8 +104,8 @@ End Function
 ' @param   'string'      tTimeFinish      Data/Hora no formato dd/mm/aaaa hh:mm:ss
 ' @return  'string'                       Duração
 Public Function fnTimeDiff(ByVal tTimeStart As Date, ByVal tTimeFinish As Date) As String
-    
-    Dim DR, DL, JL As Long
+   
+    Dim DR As Long, DL As Long, JL As Long
     DL = (Hour(tTimeStart) * 3600) + (Minute(tTimeStart) * 60) + (Second(tTimeStart))
     DR = (Hour(tTimeFinish) * 3600) + (Minute(tTimeFinish) * 60) + (Second(tTimeFinish))
     
@@ -112,9 +115,9 @@ Public Function fnTimeDiff(ByVal tTimeStart As Date, ByVal tTimeFinish As Date) 
         JL = 0
     End If
     JL = JL + (DR - DL)
-    fnTimeDiff = Format(str(Int((Int((JL / 3600)) Mod 24))), "00") _
-        + ":" + Format(str(Int((Int((JL / 60)) Mod 60))), "00") _
-        + ":" + Format(str(Int((JL Mod 60))), "00")
+    fnTimeDiff = Format(CStr(CInt((Int((JL / 3600)) Mod 24))), "00") _
+        + ":" + Format(CStr(CInt((Int((JL / 60)) Mod 60))), "00") _
+        + ":" + Format(CStr(CInt((JL Mod 60))), "00")
         
 End Function
 
@@ -123,15 +126,14 @@ End Function
 ' Função para retornar o último dia do mês de uma data informada
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnLastDayOfMonth
-' @param   'string'      sDate            Data no formato dd/mm/aaaa
+' @param   'string'      vString          Data no formato dd/mm/aaaa
 ' @return  'string'                       Último dia do mês
-Public Function fnLastDayOfMonth(ByVal sDate As String) As String
+Public Function fnLastDayOfMonth(ByVal vString As String) As String
     
-    Dim dNewDate As Date
-    strAux = Split(sDate, "/")
-    dNewDate = DateAdd("m", 1, DateSerial(strAux(2), strAux(1), 1))
-    dNewDate = DateAdd("d", -1, dNewDate)
-    fnLastDayOfMonth = CStr(dNewDate)
+    Dim d As Variant
+    d = Split(vString, "/")
+    'Acrescenta 1 mês e depois subtrai 1 dia
+    fnLastDayOfMonth = DateAdd("d", -1, DateAdd("m", 1, DateSerial(d(2), d(1), 1)))
     
 End Function
 
@@ -140,15 +142,16 @@ End Function
 ' Função para remover múltiplos espaços de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleSpaces
-' @param   'string'      sValue          String com espaços
+' @param   'string'      vString          String com espaços
 ' @return  'string'                       String sem múltiplos espaços
-Public Function fnDeleteMultipleSpaces(ByVal sValue As String) As String
-
-    Do While InStr(sValue, "  ") > 0
-        sValue = Replace(sValue, "  ", " ")
-    Loop
-    fnDeleteMultipleSpaces = sValue
-
+Public Function fnDeleteMultipleSpaces(ByVal vString As String) As String
+    
+    With CreateObject("VBScript.RegExp")
+        .Pattern = "\s{2,}"
+        .Global = True
+        fnDeleteMultipleSpaces = .Replace(vString, Space(1))
+    End With
+    
 End Function
 
 
@@ -156,15 +159,16 @@ End Function
 ' Função para remover múltiplas tabulações de uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnDeleteMultipleTabs
-' @param   'string'      sValue           String com espaços
+' @param   'string'      vString          String com várias tabulações
 ' @return  'string'                       String sem múltiplas tabulações
-Public Function fnDeleteMultipleTabs(ByVal sValue As String) As String
-
-    Do While InStr(sValue, vbTab & vbTab) > 0
-        sValue = Replace(sValue, vbTab & vbTab, vbTab)
-    Loop
-    fnDeleteMultipleTabs = sValue
-
+Public Function fnDeleteMultipleTabs(ByVal vString As String) As String
+    
+    With CreateObject("VBScript.RegExp")
+        .Pattern = "\t{2,}"
+        .Global = True
+        fnDeleteMultipleTabs = .Replace(vString, vbTab)
+    End With
+    
 End Function
 
 
@@ -256,8 +260,8 @@ Public Function fnSaveDialogFile(sFileName As String, _
     
     With fd
         ' Procura pelo índice correto da extensão desejada
-        For iFilterIndex = 1 To .Filters.count
-            If (InStr(1, LCase(.Filters(iFilterIndex).description), LCase(IFilter), vbTextCompare) _
+        For iFilterIndex = 1 To .Filters.Count
+            If (InStr(1, LCase(.Filters(iFilterIndex).Description), LCase(IFilter), vbTextCompare) _
                 And (LCase(.Filters(iFilterIndex).Extensions) = "*" & LCase(sExtension))) Then
                 .FilterIndex = iFilterIndex
                 Exit For
@@ -284,22 +288,22 @@ End Function
 ' alinhamento (utilizado para gerar arquivos texto para layouts)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnFS
-' @param   'string'      sValue           string para formatar
-' @param   'integer'     iSize            tamanho da string formatada
-' @param   'string'      sPosition        posição para alinhar a string (left ou right)
-' @param   'string'      sChar            caracter para completar a string (space, zero, etc)
+' @param   'string'      vString          string para formatar
+' @param   'integer'     vSize            tamanho da string formatada
+' @param   'string'      vPosition        posição para alinhar a string (left ou right)
+' @param   'string'      vChar            caracter para completar a string (space, zero, etc)
 ' @return  'string'                       string formatada
 ' Exemplo:  fnFS("variavel", 10, "R", " ")
-Public Function fnFS(ByVal sValue As String, ByVal iSize As Integer, ByVal sPosition As String, ByVal sChar As String)
+Public Function fnFS(ByVal vString As String, ByVal vSize As Integer, ByVal vPosition As String, ByVal vChar As String)
 
-    If (Len(sValue) > iSize) Then
-        fnFS = Left(sValue, iSize)
+    If (Len(vString) > vSize) Then
+        fnFS = Left(vString, vSize)
     Else
-        If (sPosition = "R") Then
-            fnFS = String(iSize - Len(sValue), sChar) & sValue
+        If (vPosition = "R") Then
+            fnFS = String(vSize - Len(vString), vChar) & vString
         End If
-        If (sPosition = "L") Then
-            fnFS = sValue & String(iSize - Len(sValue), sChar)
+        If (vPosition = "L") Then
+            fnFS = vString & String(vSize - Len(vString), vChar)
         End If
     End If
 
@@ -313,25 +317,28 @@ End Function
 ' @param   'string'      sValue             String para substituir
 ' @param   'bool'        bSpecialCharacter  Boolean se é para remover caracteres especiais
 ' @return  'string'                         String sem acentos ou sem caracteres especiais
-Public Function fnRemoveSpecialChars(ByVal sValue As String, Optional bSpecialCharacter As Boolean = False) As String
+Public Function fnRemoveSpecialChars(ByVal vString As String, Optional ByVal vSpecialCharacter As Boolean = False) As String
 
-    Dim re As Object
     Dim vPattern As Variant
-    If (bSpecialCharacter = False) Then
+    Dim vArray As Variant
+    
+    If (vSpecialCharacter = False) Then
         vPattern = Array("[áàâãä]|a", "[ÁÀÂÃÄ]|A", "[éèê]|e", "[ÉÈÊ]|E", "[íì]|i", "[ÍÌ]|I", "[óòôõö]|o", "[ÓÒÔÕÖ]|O", "[úùü]|u", "[ÚÙÜ]|U", "ç|c", "Ç|C")
     Else
         vPattern = Array("-|", "/|", "\.|", "º|o", "ª|a", "\\|")
     End If
     
-    Set re = CreateObject("vbscript.regexp")
-    re.Global = True
-    For i = 0 To UBound(vPattern)
-        aux = Split(vPattern(i), "|")
-        re.Pattern = aux(0)
-        sReplaceWith = aux(1)
-        sValue = re.Replace(sValue, sReplaceWith)
-    Next i
-    fnRemoveSpecialChars = sValue
+    With CreateObject("VBScript.RegExp")
+        .Global = True
+        For Each vItem In vPattern
+            vArray = Split(vItem, "|")
+            .Pattern = vArray(0)
+            vReplaceWith = vArray(1)
+            vString = .Replace(vString, vReplaceWith)
+        Next vItem
+        fnRemoveSpecialChars = vString
+    End With
+    
 
 End Function
 
@@ -340,30 +347,28 @@ End Function
 '===============================================================================================================
 ' Esta função serve testar uma expressão regular em uma string
 '
-' @author  unknown name
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnTestRegExp
-' @param   'string'      vPattern         expressão regular
-' @return  'string'      vString          string para verificar
+' @param   'string'      vPattern         Expressão regular
+' @param   'string'      vString          String para verificar
+' @return  'boolean'                      Retorna verdadeiro ou falso
 ' Exemplo:
-' sMyString = "IS1 is2 IS3 is4"
-' sMyPattern = "is."
+' vString = "IS1 is2 IS3 is4"
+' vPattern = "is."
 ' retorno = fnTestRegExp(vPattern, vString)
-Public Function fnTestRegExp(vPattern As String, vString As String) As Boolean
+Public Function fnTestRegExp(ByVal vPattern As String, ByVal vString As String) As Boolean
 
-    Dim re As Object, match As Object, AllMatches As Object
-   
-    Set re = CreateObject("vbscript.regexp")
-    re.Pattern = vPattern
-    re.IgnoreCase = False
-    re.Global = True
+    With CreateObject("VBScript.RegExp")
+        .Pattern = vPattern
+        .IgnoreCase = False
+        .Global = True
 
-    If (re.Test(vString) = True) Then
-        'Get the matches.
-        Set AllMatches = re.Execute(vString)
-        fnTestRegExp = True
-    Else
-       fnTestRegExp = False
-   End If
+        If (.Test(vString) = True) Then
+            fnTestRegExp = True
+        Else
+            fnTestRegExp = False
+        End If
+    End With
 
 End Function
 
@@ -416,16 +421,18 @@ End Function
 ' @return  'worksheet'                   Objeto Worksheet
 ' Based on https://www.spreadsheet1.com/vba-codenames.html
 ' Como usar:
-' Dim Plan As Object
+' Dim Plan As Woksheet
 ' Set Plan = fnGetSheetFromCodeName("SheetCodeName")
-Public Function fnGetSheetFromCodeName(sCodename As String) As Object
-    Dim oSht As Object
-    For Each oSht In ActiveWorkbook.Sheets
-        If oSht.CodeName = sCodename Then
-            Set fnGetSheetFromCodeName = oSht
+Public Function fnGetSheetFromCodeName(ByVal vString As String) As Object
+    
+    Dim vSheet As Object
+    For Each vSheet In ActiveWorkbook.Sheets
+        If (vSheet.CodeName = vString) Then
+            Set fnGetSheetFromCodeName = vSheet
             Exit For
         End If
-    Next oSht
+    Next vSheet
+    
 End Function
 
 
@@ -433,14 +440,12 @@ End Function
 ' Função para inverter uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnStringReverse
-' @param   'string'      strIn            String
+' @param   'string'      vString          String
 ' @return  'string'                       Retorna a string reversa
-Public Function fnStringReverse(strIn As String) As String
-    Dim output As String
-    For i = 0 To Len(strIn) - 1
-        output = output & Mid(CStr(strIn), Len(CStr(strIn)) - i, 1)
-    Next
-    fnStringReverse = output
+Public Function fnStringReverse(ByVal vString As String) As String
+    
+    fnStringReverse = StrReverse(vString)
+    
 End Function
 
 
@@ -448,25 +453,28 @@ End Function
 ' Função para retornar valor de bytes com sufixo
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnBytesHuman
-' @param   'string'      bytes          Double number
+' @param   'string'      vBytes         Double number
 ' @return  'string'                     Número com sufixo
-Public Function fnBytesHuman(bytes As Double) As String
-    Dim units As Variant
-    bytes = Trim(bytes)
+Public Function fnBytesHuman(vBytes As Double) As String
+    
+    Dim vUnits As Variant
+    Dim i As Integer
+    vBytes = Trim(vBytes)
     i = 0
-    units = Array("bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    vUnits = Array("bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
     Do While (True)
-        If (bytes < 1024) Then
+        If (vBytes < 1024) Then
             If (i <= 0) Then
-                fnBytesHuman = Round(bytes, 2) & " " & units(i)
+                fnBytesHuman = Round(vBytes, 2) & " " & vUnits(i)
             Else
-                fnBytesHuman = FormatNumber(Round(bytes, 2), 2) & " " & units(i)
+                fnBytesHuman = FormatNumber(Round(vBytes, 2), 2) & " " & vUnits(i)
             End If
             Exit Do
         End If
-        bytes = bytes / 1024
+        vBytes = vBytes / 1024
         i = i + 1
     Loop
+    
 End Function
 
 
@@ -475,42 +483,42 @@ End Function
 ' Função para retornar a posição de um determinado caracter em uma string string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnStrPos
-' @param   'string'      sValue           string para procurar algum valor
-' @param   'string'      sChar            valor procurado
-' @param   'string'      iPosition        número da ocorrência procurada
+' @param   'string'      vString          string para procurar algum valor
+' @param   'string'      vChar            valor procurado
+' @param   'string'      vPosition        número da ocorrência procurada
 '                                         0 ou não informado = 1ª ocorrência
 '                                         -1                 =  última ocorrência
 '                                         N                  = ocorrência número N
 ' @return  'integer'                      número da posição onde o caracter foi encontrado
 ' Exemplo:  fnStrPos("123ABC456BDEF", "B") - retorna 5
-Public Function fnStrPos(ByVal sValue As String, ByVal sChar As String, Optional ByVal iPosition As Integer = 0) As Integer
+Public Function fnStrPos(ByVal vString As String, ByVal vChar As String, Optional ByVal vPosition As Integer = 0) As Integer
     
-    Dim index, size As Integer
-    size = Len(sValue)
+    Dim vIndex As Integer, vSize As Integer, i As Integer, vCont As Integer
+    vSize = Len(vString)
     
-    cont = 0
-    For i = 1 To size
-        'Procura o caracter "sChar" na posição i
-        index = InStr(i, sValue, sChar)
+    vCont = 0
+    For i = 1 To vSize
+        'Procura o caracter "vChar" na posição i
+        vIndex = InStr(i, vString, vChar)
         
-        'Se o index for maior que 0 é porque encontrou
-        If (index <> 0) Then
-           cont = cont + 1
-           i = index
-           'Se a posição for igual a zero é a primeira ocorrência
-           If (iPosition = 0) Then
+        'Se o vIndex for maior que 0 é porque encontrou
+        If (vIndex <> 0) Then
+            vCont = vCont + 1
+            i = vIndex
+            'Se a posição for igual a zero é a primeira ocorrência
+            If (vPosition = 0) Then
                 Exit For
-           'Se a posição for igual ao cont é a ocorrência N
-           ElseIf (iPosition = cont) Then
+            'Se a posição for igual ao vCont é a ocorrência N
+            ElseIf (vPosition = vCont) Then
                 Exit For
-           End If
-        'Se o index for igual a zero, o index recebe o valor de i
-        ElseIf (index = 0 And iPosition <= cont) Then
-           index = i - 1
-           Exit For
+            End If
+        'Se o vIndex for igual a zero, o vIndex recebe o valor de i
+        ElseIf (vIndex = 0 And vPosition <= vCont) Then
+            vIndex = i - 1
+            Exit For
         End If
     Next i
-    fnStrPos = index
+    fnStrPos = vIndex
 
 End Function
 
@@ -541,23 +549,24 @@ End Function
 ' @name    fnStrUTF8ToASCII
 ' @param   'string'                 sInputString
 ' Exemplo:  sInputString = fnStrUTF8ToASCII(sInputString)
-Public Function fnStrUTF8ToASCII(ByVal sInputString As String) As String
+Public Function fnStrUTF8ToASCII(ByVal vString As String) As String
+    
     Dim l As Long, sUTF8 As String
     Dim iChar As Integer
     Dim iChar2 As Integer
     On Error Resume Next
     
-    For l = 1 To Len(sInputString)
-        iChar = Asc(Mid(sInputString, l, 1))
+    For l = 1 To Len(vString)
+        iChar = Asc(Mid(vString, l, 1))
         If iChar > 127 Then
             If Not iChar And 32 Then
-            iChar2 = Asc(Mid(sInputString, l + 1, 1))
+            iChar2 = Asc(Mid(vString, l + 1, 1))
             sUTF8 = sUTF8 & ChrW$(((31 And iChar) * 64 + (63 And iChar2)))
             l = l + 1
         Else
             Dim iChar3 As Integer
-            iChar2 = Asc(Mid(sInputString, l + 1, 1))
-            iChar3 = Asc(Mid(sInputString, l + 2, 1))
+            iChar2 = Asc(Mid(vString, l + 1, 1))
+            iChar3 = Asc(Mid(vString, l + 2, 1))
             sUTF8 = sUTF8 & ChrW$(((iChar And 15) * 16 * 256) + ((iChar2 And 63) * 64) + (iChar3 And 63))
             l = l + 2
         End If
@@ -566,6 +575,7 @@ Public Function fnStrUTF8ToASCII(ByVal sInputString As String) As String
         End If
     Next l
     fnStrUTF8ToASCII = sUTF8
+    
 End Function
 
 
@@ -573,33 +583,35 @@ End Function
 ' Função para buscar datas com regex em uma string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnRegexDate
-' @param   'string'      str   String contendo data
-' @return  'variant'           Array com todas as datas encontradas em uma string ou falso
-Public Function fnRegexDate(ByVal str As String) As Variant
-    Dim re As Object, match As Object, AllMatches As Object
-    Dim arr_date() As String
-    Dim i As Integer
-    Set re = CreateObject("vbscript.regexp")
-    're.Pattern = "[\d]{2}[\/-][\d]{2}[\/-][\d]{4}"
-    re.Pattern = "([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}"
-    re.Global = True
+' @param   'string'      vString    String contendo datas
+' @return  'variant'                Array com todas as datas encontradas em uma string ou falso
+Public Function fnRegexDate(ByVal vString As String) As Variant
 
-    i = 0
-    Set AllMatches = re.Execute(str)
-    For Each match In AllMatches
-        If IsDate(match.value) Then
-            ReDim Preserve arr_date(i)
-            arr_date(i) = CStr(CDate(match.value))
-            i = i + 1
-        End If
-    Next
+    Dim vMatch As Object, vAllMatches As Object
+    Dim vArrayDate() As String
+    Dim i As Integer
     
-    If AllMatches.count > 0 Then
-        fnRegexDate = arr_date
-    Else
-        fnRegexDate = False
-    End If
-    Set re = Nothing
+    With CreateObject("VBScript.RegExp")
+        're.Pattern = "[\d]{2}[\/-][\d]{2}[\/-][\d]{4}"
+        .Pattern = "([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}"
+        .Global = True
+    
+        i = 0
+        Set vAllMatches = .Execute(vString)
+        For Each vMatch In vAllMatches
+            If IsDate(vMatch.Value) Then
+                ReDim Preserve vArrayDate(i)
+                vArrayDate(i) = CStr(CDate(vMatch.Value))
+                i = i + 1
+            End If
+        Next
+        
+        If (vAllMatches.Count > 0) Then
+            fnRegexDate = vArrayDate
+        Else
+            fnRegexDate = False
+        End If
+    End With
 
 End Function
 
@@ -612,15 +624,14 @@ End Function
 ' @param   'string'      vPattern   String com o padrão regex
 ' @param   'string'      vReplace   String para substituir os matches
 ' @return  'string'                 String original ou modificada
-Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String, ByVal vReplace As String) As Variant
-    Dim re As Object, match As Object, AllMatches As Object
-    Dim arr_date() As String
-    Dim i As Long
-    Set re = CreateObject("vbscript.regexp")
-    re.Pattern = vPattern
-    re.Global = True
-    fnRegexReplace = re.Replace(vString, vReplace)
-    Set re = Nothing
+Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String, Optional ByVal vReplace As String = vbNullString) As String
+    
+    With CreateObject("VBScript.RegExp")
+        .Pattern = vPattern
+        .Global = True
+        fnRegexReplace = .Replace(vString, vReplace)
+    End With
+    
 End Function
 
 
@@ -630,10 +641,50 @@ End Function
 ' @name    fnShowNamedRange
 ' @param   'boolean'      vOption    True ou False
 Public Function fnShowNamedRange(Optional ByVal vOption As Boolean = True)
+    
     Dim n As Name
     For Each n In ThisWorkbook.Names
         n.Visible = vOption
     Next n
+    
+End Function
+
+
+'===============================================================================================================
+' Função para acrescentar caracteres à esquerda de uma string
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnPadLeft
+' @param   'string'      vString            String de origem
+' @param   'integer'     vSize              Tamanho da nova string
+' @param   'string'      vChar              Caracter para preencher a string
+' @return  'string'                         String com caracteres à esquerda
+Public Function fnPadLeft(ByVal vString As String, vSize As Integer, vChar As String) As String
+    
+    If (Len(vString) > vSize Or vChar = vbNullString) Then
+        fnPadLeft = vString
+    Else
+        fnPadLeft = Right(String(vSize, vChar) & vString, vSize)
+    End If
+    
+End Function
+
+
+'===============================================================================================================
+' Função para acrescentar caracteres à direita de uma string
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnPadLeft
+' @param   'string'      vString            String de origem
+' @param   'integer'     vSize              Tamanho da nova string
+' @param   'string'      vChar              Caracter para preencher a string
+' @return  'string'                         String com caracteres à direita
+Public Function fnPadRight(ByVal vString As String, vSize As Integer, vChar As String) As String
+    
+    If (Len(vString) > vSize Or vChar = vbNullString) Then
+        fnPadRight = vString
+    Else
+        fnPadRight = Left(vString & String(vSize, vChar), vSize)
+    End If
+    
 End Function
 
 
@@ -660,11 +711,11 @@ End Function
 ' @param   'string'      FileSpec     Caminho do arquivo
 ' @return  'boolean'                  Verdadeiro se existir e falso se não existir
 Public Function FileExists(ByVal FileSpec As String) As Boolean
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    'Dim fso As FileSystemObject
-    'Set fso = New FileSystemObject
-    FileExists = fso.FileExists(FileSpec)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        FileExists = .FileExists(FileSpec)
+    End With
+    
 End Function
 
 
@@ -675,9 +726,11 @@ End Function
 ' @param   'string'      FolderSpec   Caminho do diretório
 ' @return  'boolean'                  Verdadeiro se existir e falso se não existir
 Public Function FolderExists(ByVal FolderSpec As String) As Boolean
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    FolderExists = fso.FolderExists(FolderSpec)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        FolderExists = .FolderExists(FolderSpec)
+    End With
+    
 End Function
 
 
@@ -688,9 +741,11 @@ End Function
 ' @param   'string'      path         Caminho do diretório/arquivo
 ' @return  'string'                   Apenas nome do arquivo com extensão
 Public Function GetFileName(ByVal path As String) As String
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    GetFileName = fso.GetFileName(path)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        GetFileName = .GetFileName(path)
+    End With
+    
 End Function
 
 
@@ -701,9 +756,11 @@ End Function
 ' @param   'string'      path         Caminho do diretório/arquivo
 ' @return  'string'                   Apenas nome do arquivo sem extensão
 Public Function GetBaseName(ByVal path As String) As String
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    GetBaseName = fso.GetBaseName(path)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        GetBaseName = .GetBaseName(path)
+    End With
+    
 End Function
 
 
@@ -714,9 +771,11 @@ End Function
 ' @param   'string'      path         Caminho do diretório/arquivo
 ' @return  'string'                   Apenas nome do arquivo sem extensão
 Public Function GetExtensionName(ByVal path As String) As String
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    GetExtensionName = fso.GetExtensionName(path)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        GetExtensionName = .GetExtensionName(path)
+    End With
+    
 End Function
 
 
@@ -727,9 +786,11 @@ End Function
 ' @param   'string'      path         Caminho do diretório/arquivo
 ' @return  'string'                   Apenas letra da unidade
 Public Function GetDriveName(ByVal path As String) As String
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    GetDriveName = fso.GetDriveName(path)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        GetDriveName = .GetDriveName(path)
+    End With
+    
 End Function
 
 
@@ -740,9 +801,11 @@ End Function
 ' @param   'string'      path         Caminho do diretório/arquivo
 ' @return  'string'                   Caminho pai do diretório/arquivo
 Public Function GetParentFolderName(ByVal path As String) As String
-    Dim fso As Object
-    Set fso = CreateObject("Scripting.FileSystemObject")
-    GetParentFolderName = fso.GetParentFolderName(path)
+    
+    With CreateObject("Scripting.FileSystemObject")
+        GetParentFolderName = .GetParentFolderName(path)
+    End With
+    
 End Function
 
 
@@ -752,10 +815,11 @@ End Function
 ' @name    GetDesktopPath
 ' @return  'string'                   Caminho do Desktop do usuário atual
 Public Function GetDesktopPath() As String
-    Dim wso As Object
-    Set wso = CreateObject("WScript.Shell")
-    GetDesktopPath = wso.SpecialFolders("Desktop")
-    Set wso = Nothing
+    
+    With CreateObject("WScript.Shell")
+        GetDesktopPath = .SpecialFolders("Desktop")
+    End With
+    
 End Function
 
 
@@ -765,5 +829,7 @@ End Function
 ' @name    GetWorkbookPath
 ' @return  'string'                   Caminho do planilha atual
 Public Function GetWorkbookPath() As String
+    
     GetWorkbookPath = ActiveWorkbook.path
+    
 End Function
