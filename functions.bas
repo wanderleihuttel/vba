@@ -32,7 +32,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnShowNamedRange         Exibir ou ocultar Named Ranges
 ' fnPadLeft                Acrescentar caracteres à esquerda de uma string
 ' fnPadRight               Acrescentar caracteres à direita de uma string
-' fnLoopUpX                Buscar dados de uma tabela em outra independente da coluna (fnLoopUpX)
+' fnLookUpX                Buscar dados de uma tabela em outra independente da coluna (fnLookUpX)
 
 '===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
@@ -690,7 +690,7 @@ End Function
 
 
 '===============================================================================================================
-' Função para buscar dados de uma tabela em outra independente da coluna (fnLoopUpX)
+' Função para buscar dados de uma tabela em outra independente da coluna (fnLookUpX)
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnLoopUpX
 ' @param   'variant'      vSearchValue
@@ -699,7 +699,7 @@ End Function
 ' @param   'integer'      vColumnReturn
 ' @param   'Variant'      vValueNotFound
 ' @return  'variant'      Retorna o resultado da consulta ou erro
-Public Function fnLoopUpX(ByVal vSearchValue As Variant, _
+Public Function fnLookUpX(ByVal vSearchValue As Variant, _
                         ByVal vRangeSearch As Variant, _
                         ByVal vRangeReturn As Variant, _
                         Optional ByVal vColumnReturn As Integer = 0, _
@@ -707,12 +707,12 @@ Public Function fnLoopUpX(ByVal vSearchValue As Variant, _
     
     On Error Resume Next
     If (vColumnReturn = 0) Then
-        fnLoopUpX = Application.WorksheetFunction.Index(vRangeReturn, Application.WorksheetFunction.Match(vSearchValue, vRangeSearch, 0))
+        fnLookUpX = Application.WorksheetFunction.Index(vRangeReturn, Application.WorksheetFunction.Match(vSearchValue, vRangeSearch, 0))
     Else
-        fnLoopUpX = Application.WorksheetFunction.Index(vRangeSearch, Application.WorksheetFunction.Match(vSearchValue, vRangeReturn, 0), vColumnReturn)
+        fnLookUpX = Application.WorksheetFunction.Index(vRangeSearch, Application.WorksheetFunction.Match(vSearchValue, vRangeReturn, 0), vColumnReturn)
     End If
     
-    If IsEmpty(fnLoopUpX) Then fnLoopUpX = vValueNotFound
+    If IsEmpty(fnLookUpX) Then fnLookUpX = vValueNotFound
     Err.Clear
 
 End Function
