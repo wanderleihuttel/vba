@@ -3,7 +3,7 @@
 
 [functions.bas](/functions.bas) - Módulo contendo várias funções auxiliares
 
-[adodb.bas](/adodb.bas.bas) - Módulo para conectar com Bancos de Dados utilizando ODBC
+[adodb.bas](/adodb.bas) - Módulo para conectar com Bancos de Dados utilizando ODBC
 
 [clipboard.bas](/clipboard.bas) - Módulo para copiar texto para a área de transferência
 
