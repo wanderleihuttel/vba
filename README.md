@@ -15,9 +15,7 @@
 
 [valorporextenso.bas](/valorporextenso.bas) - Módulo para escrever valor de números por extenso
 
-
-
 <br/><br/>
-Se gostar por favor clique na estrela :star: neste repositório!
-<br/><br/>
+<hr>
+Se você gostou deste repositório não esqueça de dar um like (clicando na estrela) :star:!
 Linkedin: https://www.linkedin.com/in/wanderleihuttel/
