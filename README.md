@@ -17,5 +17,5 @@
 
 <br/><br/>
 <hr>
-Se você gostou deste repositório não esqueça de dar um like (clicando na estrela) :star:!
+Se você gostou deste repositório não esqueça de dar um like (clicando na estrela) :star:!<br/>
 Linkedin: https://www.linkedin.com/in/wanderleihuttel/
