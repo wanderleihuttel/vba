@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 04/06/2020
+' Última atualização - 01/07/2021
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -62,15 +62,15 @@ End Function
 Public Function fnIsNumber(ByVal vString As String) As Boolean
   
     Dim DP As String
-    Dim TS As String
+    Dim ts As String
     '   Get local setting for decimal point
     DP = Format$(0, ".")
     '   Get local setting for thousand's separator
     '   and eliminate them. Remove the next two lines
     '   if you don't want your users being able to
     '   type in the thousands separator at all.
-    TS = Mid$(Format$(1000, "#,###"), 2, 1)
-    vString = Replace$(vString, TS, "")
+    ts = Mid$(Format$(1000, "#,###"), 2, 1)
+    vString = Replace$(vString, ts, "")
     '   Leave the next statement out if you don't
     '   want to provide for plus/minus signs
     If vString Like "[+-]*" Then vString = Mid$(vString, 2)
@@ -717,6 +717,45 @@ Public Function fnLookUpX(ByVal vSearchValue As Variant, _
 
 End Function
 
+
+'===============================================================================================================
+' FUNÇÕES PARA MANIPULAÇÃO DA ÁREA DE TRANSFERÊNCIA
+'===============================================================================================================
+' SetClipBoardText               Copiar um texto para a área de transferência
+' GetClipBoardText               Pegar um texto da área de transferência
+' ClearClipBoardText             Limpar a área de transferência
+
+
+' https://www.thespreadsheetguru.com/blog/2015/1/13/how-to-use-vba-code-to-copy-text-to-the-clipboard
+' https://www.mrexcel.com/board/threads/vba-post-to-clipboard.1142841/
+
+
+'===============================================================================================================
+' Função para copiar um texto para a área de transferência
+' @author  Unknown
+' @name    SetClipBoardText
+' @param   'variant'      Text
+' @return  'boolean'      Retorna verdadeiro ou falso
+Function SetClipBoardText(ByVal Text As Variant) As Boolean
+    SetClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.SetData("Text", Text)
+End Function
+
+'===============================================================================================================
+' Função para pegar um texto da área de transferência
+' @name    SetClipBoardText
+' @author  Unknown
+Function GetClipBoardText() As String
+    On Error Resume Next
+    GetClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.GetData("Text")
+End Function
+
+'===============================================================================================================
+' Função para limpar a área de transferência
+' @name    ClearClipBoardText
+' @author  Unknown
+Function ClearClipBoardText() As Boolean
+    ClearClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.clearData("Text")
+End Function
 
 
 
