@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 01/07/2021
+' Última atualização - 12/11/2021
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -33,6 +33,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' fnPadLeft                Acrescentar caracteres à esquerda de uma string
 ' fnPadRight               Acrescentar caracteres à direita de uma string
 ' fnLookUpX                Buscar dados de uma tabela em outra independente da coluna (fnLookUpX)
+' fnJoin                   Retorna uma string a partir de uma range (separada por um caractere delimitado)
 
 '===============================================================================================================
 ' Função para formatar inscrição Federal (CPF e CNPJ)
@@ -719,6 +720,30 @@ End Function
 
 
 '===============================================================================================================
+' Função para converter uma range para uma string separada por um caracter delimitador
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnJoin
+' @param   'range'       vRange             Range de origem
+' @param   'char  '      vDelimiter         Caracter delimitador
+' @return  'string'                         String separada por com caracter delimitador
+Function fnJoin(ByVal vRange As Range, Optional vDelimiter As String = ",") As String
+    Dim vResult As String
+    Dim r As Range
+
+    vResult = ""
+    For Each r In vRange
+        If (IsEmpty(r)) Then
+            Exit For
+        End If
+        vResult = vResult & r & vDelimiter
+    Next
+
+    fnJoin = Left(vResult, Len(vResult) - 1)
+End Function
+
+
+
+'===============================================================================================================
 ' FUNÇÕES PARA MANIPULAÇÃO DA ÁREA DE TRANSFERÊNCIA
 '===============================================================================================================
 ' SetClipBoardText               Copiar um texto para a área de transferência
@@ -904,3 +929,4 @@ Public Function GetWorkbookPath() As String
     GetWorkbookPath = ActiveWorkbook.path
     
 End Function
+
