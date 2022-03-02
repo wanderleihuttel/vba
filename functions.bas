@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 12/11/2021
+' Última atualização - 02/03/2022
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -760,26 +760,41 @@ End Function
 ' @author  Unknown
 ' @name    SetClipBoardText
 ' @param   'variant'      Text
-' @return  'boolean'      Retorna verdadeiro ou falso
-Function SetClipBoardText(ByVal Text As Variant) As Boolean
-    SetClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.SetData("Text", Text)
+Function SetClipBoardText(ByVal vText As Variant)
+    'MSForms 2.0 Object Library
+    On Error Resume Next
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText vText
+        .PutInClipboard
+        .GetText
+    End With
 End Function
 
 '===============================================================================================================
 ' Função para pegar um texto da área de transferência
 ' @name    SetClipBoardText
 ' @author  Unknown
-Function GetClipBoardText() As String
+Function GetClipBoardText()
+    'MSForms 2.0 Object Library
     On Error Resume Next
-    GetClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.GetData("Text")
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .GetFromClipboard
+        GetClipBoardText = .GetText
+    End With
 End Function
 
 '===============================================================================================================
 ' Função para limpar a área de transferência
 ' @name    ClearClipBoardText
 ' @author  Unknown
-Function ClearClipBoardText() As Boolean
-    ClearClipBoardText = CreateObject("htmlfile").ParentWindow.ClipboardData.clearData("Text")
+Function ClearClipBoardText()
+    'MSForms 2.0 Object Library
+    On Error Resume Next
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText ""
+        .PutInClipboard
+        .GetText
+    End With
 End Function
 
 
