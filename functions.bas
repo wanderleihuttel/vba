@@ -631,6 +631,7 @@ Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String
     With CreateObject("VBScript.RegExp")
         .Pattern = vPattern
         .Global = True
+        .MultiLine = True
         fnRegexReplace = .Replace(vString, vReplace)
     End With
     
