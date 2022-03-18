@@ -326,7 +326,7 @@ Public Function fnRemoveSpecialChars(ByVal vString As String, Optional ByVal vSp
     Dim vArray As Variant
     
     If (vSpecialCharacter = False) Then
-        vPattern = Array("[áàâãä]|a", "[ÁÀÂÃÄ]|A", "[éèê]|e", "[ÉÈÊ]|E", "[íì]|i", "[ÍÌ]|I", "[óòôõö]|o", "[ÓÒÔÕÖ]|O", "[úùü]|u", "[ÚÙÜ]|U", "ç|c", "Ç|C")
+        vPattern = Array("[àáâãäå]|a", "[ÀÁÂÃÄÅ]|A", "[éèêë]|e", "[ÉÈÊË]|E", "[ìíîï]|i", "[ÌÍÎÏ]|I", "[óòôõö]|o", "[ÓÒÔÕÖ]|O", "[ùúûü]|u", "[ÙÚÛÜ]|U", "[ç]|c", "[Ç]|C", "[ñ]|n", "[Ñ]|N", "[ýÿ]|y", "[ÝŸ]|Y")
     Else
         vPattern = Array("-|", "/|", "\.|", "º|o", "ª|a", "\\|")
     End If
