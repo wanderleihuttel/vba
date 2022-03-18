@@ -1,9 +1,10 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 05/03/2022
+' Última atualização - 18/03/2022
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare PtrSafe Function SetCurrentDirectory Lib "kernel32" Alias "SetCurrentDirectoryA" (ByVal lpPathName As String) As Long
 
 '===============================================================================================================
 ' Funções Disponíveis
