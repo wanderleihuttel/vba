@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 18/03/2022
+' Última atualização - 24/05/2022
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -91,7 +91,7 @@ End Function
 Public Function fnOnlyNumbers(ByVal vString As String) As String
 
     With CreateObject("VBScript.RegExp")
-        .Pattern = "[^\d]+"
+        .Pattern = "[^0-9]+"
         .Global = True
         fnOnlyNumbers = .Replace(vString, vbNullString)
     End With
@@ -595,10 +595,8 @@ Public Function fnRegexDate(ByVal vString As String) As Variant
     Dim i As Integer
     
     With CreateObject("VBScript.RegExp")
-        're.Pattern = "[\d]{2}[\/-][\d]{2}[\/-][\d]{4}"
-        .Pattern = "([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}"
+        .Pattern = "(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([12][0-9]{3})"
         .Global = True
-    
         i = 0
         Set vAllMatches = .Execute(vString)
         For Each vMatch In vAllMatches
@@ -623,16 +621,26 @@ End Function
 ' Função para usar expressões regulares para substituir strings
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
 ' @name    fnRegexReplace
-' @param   'string'      vString    String qualquer
-' @param   'string'      vPattern   String com o padrão regex
-' @param   'string'      vReplace   String para substituir os matches
-' @return  'string'                 String original ou modificada
-Public Function fnRegexReplace(ByVal vString As String, ByVal vPattern As String, Optional ByVal vReplace As String = vbNullString) As String
+' @param   'string'      vString      String qualquer
+' @param   'string'      vPattern     String com o padrão regex
+' @param   'string'      vReplace     String para substituir os matches
+' @param   'boolean'     vGlobal      Substituir todas as ocorrências
+' @param   'boolean'     vIgnoreCase  Ignorar case
+' @param   'boolean'     vMultiLine   Verificar múltiplas linhas
+' @return  'string'                   String original ou modificada
+Public Function fnRegexReplace(ByVal vString As String, _
+                               ByVal vPattern As String, _
+                               Optional ByVal vReplace As String = vbNullString, _
+                               Optional ByVal vGlobal As Boolean = True, _
+                               Optional ByVal vIgnoreCase As Boolean = False, _
+                               Optional ByVal vMultiLine As Boolean = True _
+                               ) As String
     
     With CreateObject("VBScript.RegExp")
         .Pattern = vPattern
-        .Global = True
-        .MultiLine = True
+        .IgnoreCase = vIgnoreCase
+        .Global = vGlobal
+        .MultiLine = vMultiLine
         fnRegexReplace = .Replace(vString, vReplace)
     End With
     
@@ -946,4 +954,3 @@ Public Function GetWorkbookPath() As String
     GetWorkbookPath = ActiveWorkbook.path
     
 End Function
-
