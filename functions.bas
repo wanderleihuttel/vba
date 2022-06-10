@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 24/05/2022
+' Última atualização - 10/06/2022
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -30,6 +30,7 @@ Public Declare PtrSafe Function SetCurrentDirectory Lib "kernel32" Alias "SetCur
 ' fnStrUTF8ToASCII         Converter texto UTF8 para ASCII
 ' fnRegexDate              Buscar datas com expressão regular em uma string
 ' fnRegexReplace           Efetuar substituiçoes em strings com expressões regulares
+' fnRegexMatch             Buscar partes de texto usando expressões regulares
 ' fnShowNamedRange         Exibir ou ocultar Named Ranges
 ' fnPadLeft                Acrescentar caracteres à esquerda de uma string
 ' fnPadRight               Acrescentar caracteres à direita de uma string
@@ -642,6 +643,50 @@ Public Function fnRegexReplace(ByVal vString As String, _
         .Global = vGlobal
         .MultiLine = vMultiLine
         fnRegexReplace = .Replace(vString, vReplace)
+    End With
+    
+End Function
+
+
+'===============================================================================================================
+' Função para buscar partes de texto usando expressões regulares
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnRegexReplace
+' @param   'string'      vString      String qualquer
+' @param   'string'      vPattern     String com o padrão regex
+' @param   'boolean'     vGlobal      Substituir todas as ocorrências
+' @param   'boolean'     vIgnoreCase  Ignorar case
+' @param   'boolean'     vMultiLine   Verificar múltiplas linhas
+' @return  'string'                   String original ou modificada
+Public Function fnRegexMatch(ByVal vString As String, _
+                             ByVal vPattern As String, _
+                             Optional ByVal vGlobal As Boolean = True, _
+                             Optional ByVal vIgnoreCase As Boolean = False, _
+                             Optional ByVal vMultiLine As Boolean = True _
+                             ) As Variant
+    
+    Dim vMatch As Object, vAllMatches As Object
+    Dim vArrayMatch() As Variant
+    Dim i As Integer
+    
+    With CreateObject("VBScript.RegExp")
+        .Pattern = vPattern
+        .IgnoreCase = vIgnoreCase
+        .Global = vGlobal
+        .MultiLine = vMultiLine
+        Set vAllMatches = .Execute(vString)
+        
+        If (vAllMatches.Count > 0) Then
+            ReDim Preserve vArrayMatch(vAllMatches.Count)
+            For Each vMatch In vAllMatches
+                vArrayMatch(i) = vMatch.Value
+                i = i + 1
+            Next
+            fnRegexMatch = vArrayMatch
+        Else
+            fnRegexMatch = False
+        End If
+        
     End With
     
 End Function
