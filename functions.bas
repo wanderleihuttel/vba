@@ -482,7 +482,6 @@ Public Function fnBytesHuman(vBytes As Double) As String
 End Function
 
 
-
 '===============================================================================================================
 ' Função para retornar a posição de um determinado caracter em uma string string
 ' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
@@ -675,9 +674,8 @@ Public Function fnRegexMatch(ByVal vString As String, _
         .Global = vGlobal
         .MultiLine = vMultiLine
         Set vAllMatches = .Execute(vString)
-        
         If (vAllMatches.Count > 0) Then
-            ReDim Preserve vArrayMatch(vAllMatches.Count)
+            ReDim Preserve vArrayMatch(vAllMatches.Count - 1)
             For Each vMatch In vAllMatches
                 vArrayMatch(i) = vMatch.Value
                 i = i + 1
@@ -686,7 +684,6 @@ Public Function fnRegexMatch(ByVal vString As String, _
         Else
             fnRegexMatch = False
         End If
-        
     End With
     
 End Function
