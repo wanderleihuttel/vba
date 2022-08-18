@@ -17,6 +17,13 @@
 
 <br/><br/>
 <hr>
-Se você gostou deste repositório não esqueça de dar um like (clicando na estrela) :star:!<br/>
-Linkedin: https://www.linkedin.com/in/wanderleihuttel/
-Canal Telegram: https://t.me/excelbr ou @excelbr
+Se você gostou deste repositório não esqueça de dar um like (clicando na estrela) :star:
+<br>
+Se quiser me pagar 💰 um café ☕ ou uma cerveja 🍺:
+<br>
+<b>Chave PIX</b>: <a href="https://nubank.com.br/pagar/4srxc/T0zsIx2msY" target="_blank">Pagar um Café ou uma Cerveja</a>
+<br>
+<br>
+<b>Linkedin</b> - https://www.linkedin.com/in/wanderleihuttel/
+<br>
+<b>Canal Telegram:</b> https://t.me/excelbr ou @excelbr
