@@ -1,6 +1,6 @@
 '===============================================================================================================
 ' Funções VBA
-' Última atualização - 10/06/2022
+' Última atualização - 15/05/2023
 
 ' Declaração da Função Sleep do Kernel do Windows
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -10,6 +10,8 @@ Public Declare PtrSafe Function SetCurrentDirectory Lib "kernel32" Alias "SetCur
 ' Funções Disponíveis
 '
 ' fnStrMaskCPFCNPJ         Formatar CPF ou CNPJ
+' fnValidarCNPJ            Validar CNPJ
+' fnValidarCPF             Validar CPF
 ' fnIsNumber               Verificar se uma string é numérica
 ' fnOnlyNumbers            Retorna apenas os números de uma string
 ' fnTimeDiff               Retorna a diferença entre 2 horários
@@ -51,6 +53,134 @@ Public Function fnStrMaskCPFCNPJ(ByVal vString As String) As String
         fnStrMaskCPFCNPJ = Format$(vString, "00\.000\.000\/0000\-00")
     Else
         fnStrMaskCPFCNPJ = vString
+    End If
+    
+End Function
+
+
+'===============================================================================================================
+' Esta função serve para validar CNPJ
+' Baseado na função PHP de Guilherme Sehn (https://gist.github.com/guisehn/3276302)
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnValidarCNPJ
+' @param   'string'      vCNPJ         String contendo o CNPJ
+' @return  'boolean'                   Retorna verdadeiro ou falso se validar o CNPJ
+Function fnValidarCNPJ(ByVal vCNPJ As String) As Boolean
+    Dim i As Integer, j As Integer, vSoma As Integer, vResto As Integer
+    Dim vDV1 As String, vDV2 As String
+    Dim vNumerosIguais As Boolean
+    
+    With CreateObject("VBScript.RegExp")
+        
+        'Remove caracteres que não são números
+        .Pattern = "[^0-9]+"
+        .Global = True
+        vCNPJ = .Replace(vCNPJ, vbNullString)
+        
+        'Verifica se todos os caracteres são números iguais
+        .Pattern = "([0-9])\1{13}"
+        vNumerosIguais = .test(vCNPJ)
+    End With
+    
+    'Coloca Zeros à Esquerda
+    'vCNPJ = String(14 - Len(vCNPJ), "0") & vCNPJ
+    
+    'Verifica se é número e se os caracteres não são todos iguais
+    If (Not IsNumeric(vCNPJ) Or vNumerosIguais = True Or Len(vCNPJ) <> 14) Then
+        fnValidarCNPJ = False
+        Exit Function
+    End If
+
+    'Validar primeiro dígito verificador
+    i = 0
+    j = 5
+    vSoma = 0
+    For i = 1 To 12 Step 1
+        vSoma = vSoma + Mid(vCNPJ, i, 1) * j
+        j = IIf((j = 2), 9, j - 1)
+    Next i
+    vResto = vSoma Mod 11
+    vDV1 = IIf(vResto < 2, 0, 11 - vResto)
+     
+    'Validar segundo dígito verificador
+    i = 0
+    j = 6
+    vSoma = 0
+    For i = 1 To 13 Step 1
+        vSoma = vSoma + Mid(vCNPJ, i, 1) * j
+        j = IIf((j = 2), 9, j - 1)
+    Next i
+    vResto = vSoma Mod 11
+    vDV2 = IIf(vResto < 2, 0, 11 - vResto)
+    
+    If (vDV1 & vDV2 = Mid(vCNPJ, 13, 2)) Then
+        fnValidarCNPJ = True
+    Else
+        fnValidarCNPJ = False
+    End If
+    
+End Function
+
+
+'===============================================================================================================
+' Esta função serve para validar CPF
+' Baseado na função PHP de Guilherme Sehn (https://gist.github.com/guisehn/3276015)
+' @author  Wanderlei Hüttel <wanderlei dot huttel at gmail dot com>
+' @name    fnValidarCPF
+' @param   'string'      vCNPJ            String contendo o CPF
+' @return  'boolean'                      Retorna verdadeiro ou falso se validar o CPF
+Function fnValidarCPF(ByVal vCPF As String) As Boolean
+    Dim i As Integer, j As Integer, vSoma As Integer, vResto As Integer
+    Dim vDV1 As String, vDV2 As String, vCheck As String
+    Dim vNumerosIguais As Boolean
+    
+    With CreateObject("VBScript.RegExp")
+        
+        'Remove caracteres que não são números
+        .Pattern = "[^0-9]+"
+        .Global = True
+        vCPF = .Replace(vCPF, vbNullString)
+        
+        'Verifica se todos os caracteres são números iguais
+        .Pattern = "([0-9])\1{10}"
+        vNumerosIguais = .test(vCPF)
+    End With
+    
+    'Coloca Zeros à Esquerda
+    'vCPF = String(11 - Len(vCPF), "0") & vCPF
+    
+    'Verifica se é número e se os caracteres não são todos iguais
+    If (Not IsNumeric(vCPF) Or vNumerosIguais = True Or Len(vCPF) <> 11) Then
+        fnValidarCPF = False
+        Exit Function
+    End If
+
+    'Validar primeiro dígito verificador
+    i = 0
+    j = 10
+    vSoma = 0
+    For i = 1 To 9 Step 1
+        vSoma = vSoma + Mid(vCPF, i, 1) * j
+        j = j - 1
+    Next i
+    vResto = vSoma Mod 11
+    vDV1 = IIf(vResto < 2, 0, 11 - vResto)
+     
+    'Validar segundo dígito verificador
+    i = 0
+    j = 11
+    vSoma = 0
+    For i = 1 To 10 Step 1
+        vSoma = vSoma + Mid(vCPF, i, 1) * j
+        j = j - 1
+    Next i
+    vResto = vSoma Mod 11
+    vDV2 = IIf(vResto < 2, 0, 11 - vResto)
+    
+    If (vDV1 & vDV2 = Mid(vCPF, 10, 2)) Then
+        fnValidarCPF = True
+    Else
+        fnValidarCPF = False
     End If
     
 End Function
